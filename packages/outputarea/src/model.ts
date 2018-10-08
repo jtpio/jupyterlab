@@ -401,8 +401,8 @@ export class OutputAreaModel implements IOutputAreaModel {
     do {
       // Remove any chunks preceding a carriage return unless carriage
       // return followed by a newline
-      tmp = tmp.replace(/^[^\n]*(?:\r(?!\n))+/gm, '');
-    } while (tmp.search(/\r(?!\n)/) > -1);
+      tmp = tmp.replace(/^[^\n]*(?:\r(?!\n|$))+/gm, '');
+    } while (tmp.search(/\r(?!\n|$)/) > -1);
     do {
       // Replace remaining \r\n characters with a newline
       tmp = tmp.replace(/\r\n/gm, '\n');
