@@ -649,6 +649,9 @@ async function activateConsole(
     command: CommandIDs.restart,
     selector: '.jp-CodeConsole'
   });
-
+  app.contextMenu.addItem({
+    command: CommandIDs.renameSession,
+    selector: '.jp-CodeConsole'
+  });
   return tracker;
 }
