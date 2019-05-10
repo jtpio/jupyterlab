@@ -518,7 +518,8 @@ async function activateConsole(
     CommandIDs.restart,
     CommandIDs.interrupt,
     CommandIDs.changeKernel,
-    CommandIDs.closeAndShutdown
+    CommandIDs.closeAndShutdown,
+    CommandIDs.renameSession
   ].forEach(command => {
     palette.addItem({ command, category, args: { isPalette: true } });
   });
