@@ -13,6 +13,7 @@ import {
   IClientSession,
   ICommandPalette,
   InstanceTracker,
+  getText,
   showDialog
 } from '@jupyterlab/apputils';
 
@@ -78,6 +79,8 @@ namespace CommandIDs {
   export const shiftEnterToExecute = 'console:shift-enter-to-execute';
 
   export const interactionMode = 'console:interaction-mode';
+
+  export const renameSession = 'console:rename-session';
 }
 
 /**
@@ -480,6 +483,27 @@ async function activateConsole(
         return;
       }
       return current.console.session.selectKernel();
+    },
+    isEnabled
+  });
+
+  commands.addCommand(CommandIDs.renameSession, {
+    label: 'Rename Session',
+    execute: async args => {
+      let current = getCurrent(args);
+      if (!current) {
+        return;
+      }
+      let dialog = await getText({
+        title: 'Rename Session',
+        label: 'Name',
+        placeholder: 'Console',
+        text: current.console.session.name
+      });
+      let name = dialog.value;
+      if (name) {
+        current.console.session.setName(name);
+      }
     },
     isEnabled
   });
