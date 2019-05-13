@@ -498,6 +498,7 @@ async function activateConsole(
         title: 'Rename Session',
         label: 'Name',
         placeholder: 'Console',
+        focusNodeSelector: 'input',
         text: current.console.session.name
       });
       let name = dialog.value;
