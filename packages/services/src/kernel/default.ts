@@ -476,15 +476,13 @@ export class DefaultKernel implements Kernel.IKernel {
   async requestKernelInfo(): Promise<KernelMessage.IInfoReplyMsg> {
     let msg = KernelMessage.createMessage({
       msgType: 'kernel_info_request',
-      channel: 'shell',
+      channel: 'control',
       username: this._username,
       session: this._clientId,
       content: {}
     });
-    let reply = (await Private.handleShellMessage(
-      this,
-      msg
-    )) as KernelMessage.IInfoReplyMsg;
+    const future = this.sendControlMessage(msg, true);
+    const reply = (await future.done) as KernelMessage.IInfoReplyMsg;
     if (this.isDisposed) {
       throw new Error('Disposed kernel');
     }

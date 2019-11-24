@@ -193,8 +193,6 @@ export namespace KernelMessage {
     | 'interrupt_request'
     | 'is_complete_reply'
     | 'is_complete_request'
-    | 'kernel_info_reply'
-    | 'kernel_info_request'
     | 'shutdown_reply'
     | 'shutdown_request';
 
@@ -206,7 +204,11 @@ export namespace KernelMessage {
    * kernel message specification. As such, debug message types are *NOT*
    * considered part of the public API, and may change without notice.
    */
-  export type ControlMessageType = 'debug_request' | 'debug_reply';
+  export type ControlMessageType =
+    | 'debug_request'
+    | 'debug_reply'
+    | 'kernel_info_reply'
+    | 'kernel_info_request';
 
   /**
    * IOPub message types.
@@ -731,12 +733,12 @@ export namespace KernelMessage {
   type ReplyContent<T> = T | IReplyErrorContent | IReplyAbortContent;
 
   /**
-   * A `'kernel_info_request'` message on the `'shell'` channel.
+   * A `'kernel_info_request'` message on the `'control'` channel.
    *
    * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#kernel-info).
    */
   export interface IInfoRequestMsg
-    extends IShellMessage<'kernel_info_request'> {
+    extends IControlMessage<'kernel_info_request'> {
     content: {};
   }
 
@@ -776,7 +778,7 @@ export namespace KernelMessage {
    *
    * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#kernel-info).
    */
-  export interface IInfoReplyMsg extends IShellMessage<'kernel_info_reply'> {
+  export interface IInfoReplyMsg extends IControlMessage<'kernel_info_reply'> {
     parent_header: IHeader<'kernel_info_request'>;
     content: ReplyContent<IInfoReply>;
   }

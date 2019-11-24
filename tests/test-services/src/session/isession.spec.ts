@@ -119,7 +119,7 @@ describe('session', () => {
         });
         const msg = KernelMessage.createMessage({
           msgType: 'kernel_info_request',
-          channel: 'shell',
+          channel: 'control',
           session: tester.serverSessionId,
           msgId,
           content: {}

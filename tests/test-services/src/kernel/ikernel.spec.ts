@@ -115,7 +115,7 @@ describe('Kernel.IKernel', () => {
       });
       const msg = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         session: tester.serverSessionId,
         msgId,
         content: {}
@@ -143,7 +143,7 @@ describe('Kernel.IKernel', () => {
       // Send a shell message.
       const msg = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         session: tester.serverSessionId,
         msgId,
         content: {}
@@ -173,7 +173,7 @@ describe('Kernel.IKernel', () => {
       // Send a shell message with the wrong client (parent) session.
       const msg1 = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         session: tester.serverSessionId,
         msgId: 'message from wrong session',
         content: {}
@@ -184,7 +184,7 @@ describe('Kernel.IKernel', () => {
       // Send a shell message with the right client (parent) session.
       const msg2 = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         session: tester.serverSessionId,
         msgId: msgId,
         content: {}
@@ -220,7 +220,7 @@ describe('Kernel.IKernel', () => {
 
       const msg = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         session: tester.serverSessionId,
         msgId,
         content: {}
@@ -527,13 +527,13 @@ describe('Kernel.IKernel', () => {
 
       const msg = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         username: kernel.username,
         session: kernel.clientId,
         content: {}
       });
       expect(() => {
-        kernel.sendShellMessage(msg, true);
+        kernel.sendControlMessage(msg, true);
         expect(false).to.equal(true);
       }).to.throw(/Kernel is dead/);
     });
@@ -544,12 +544,12 @@ describe('Kernel.IKernel', () => {
 
       const msg = KernelMessage.createMessage({
         msgType: 'kernel_info_request',
-        channel: 'shell',
+        channel: 'control',
         username: kernel.username,
         session: kernel.clientId,
         content: {}
       });
-      const future = kernel.sendShellMessage(msg, true);
+      const future = kernel.sendControlMessage(msg, true);
 
       tester.onMessage(msg => {
         // trigger onDone

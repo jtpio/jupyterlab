@@ -404,7 +404,7 @@ export class KernelTester extends SocketTester {
     return this.sendMessage({
       msgId,
       msgType: 'kernel_info_reply',
-      channel: 'shell',
+      channel: 'control',
       content
     });
   }
@@ -633,7 +633,7 @@ export class SessionTester extends SocketTester {
         // Then send the kernel_info_reply message.
         const reply = KernelMessage.createMessage({
           msgType: 'kernel_info_reply',
-          channel: 'shell',
+          channel: 'control',
           session: this.serverSessionId,
           content: EXAMPLE_KERNEL_INFO
         });
