@@ -62,6 +62,10 @@ body {
   align-items: center;
 }
 
+.jp-LabShell[data-shell-mode='single-document'] #jp-single-document-mode {
+  top: -28px;
+}
+
 /* Sibling imports */
 @import './datagrid.css';
 @import './dockpanel.css';
