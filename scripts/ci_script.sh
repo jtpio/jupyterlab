@@ -177,7 +177,7 @@ if [[ $GROUP == usage ]]; then
     jupyter labextension link mimeextension --no-build --debug
     jupyter labextension unlink mimeextension --no-build --debug
     jupyter labextension link mimeextension --no-build --debug
-    jupyter labextension unlink  @jupyterlab/mock-mime-extension --no-build --debug
+    jupyter labextension unlink @jupyterlab/mock-mime-extension --no-build --debug
     # Test with a full install
     jupyter labextension install mimeextension  --no-build --debug
     jupyter labextension list --debug
@@ -189,6 +189,9 @@ if [[ $GROUP == usage ]]; then
     # Test with a dynamic install
     jupyter labextension develop extension --debug
     jupyter labextension build extension
+
+    # Test with the core path option
+    jupyter labextension build --core-path ../../../dev_mode extension
 
     python -m jupyterlab.browser_check
     jupyter labextension list 1>labextensions 2>&1
