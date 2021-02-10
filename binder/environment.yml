@@ -10,3 +10,5 @@ dependencies:
   - python=3.8
   - vega_datasets
   - xeus-python
+  - pip:
+    - git+git://github.com/jtpio/jupyterlab-link-share.git@server-proxy
