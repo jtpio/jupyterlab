@@ -26,6 +26,15 @@ import {
 
 import { SessionAPI } from '@jupyterlab/services';
 
+class FakeKernelManager extends KernelManager {
+  // Override requestRunning since we aren't starting kernels
+  // on the server.
+  // This prevents kernel connections from being culled.
+  requestRunning(): Promise<void> {
+    return Promise.resolve(void 0);
+  }
+}
+
 const server = new JupyterServer();
 
 beforeAll(async () => {
@@ -38,7 +47,7 @@ afterAll(async () => {
 
 describe('@jupyterlab/apputils', () => {
   describe('SessionContext', () => {
-    let kernelManager: KernelManager;
+    let kernelManager: FakeKernelManager;
     let sessionManager: SessionManager;
     let specsManager: KernelSpecManager;
     let path = '';
@@ -46,7 +55,7 @@ describe('@jupyterlab/apputils', () => {
 
     beforeAll(async () => {
       jest.setTimeout(20000);
-      kernelManager = new KernelManager();
+      kernelManager = new FakeKernelManager();
       sessionManager = new SessionManager({ kernelManager });
       specsManager = new KernelSpecManager();
       await Promise.all([
