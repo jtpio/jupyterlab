@@ -77,6 +77,10 @@ describe('@jupyterlab/apputils', () => {
       sessionContext.dispose();
     });
 
+    afterAll(async () => {
+      await kernelManager.shutdownAll();
+    });
+
     describe('#constructor()', () => {
       it('should create a session context', () => {
         expect(sessionContext).toBeInstanceOf(SessionContext);
