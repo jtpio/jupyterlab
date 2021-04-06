@@ -454,6 +454,7 @@ export async function ensureIntegrity(): Promise<boolean> {
   // Get the package graph.
   const graph = utils.getPackageGraph();
 
+  console.log('GATHER DATA');
   // Gather all of our package data and other metadata.
   paths.forEach(pkgPath => {
     // Read in the package.json.
@@ -471,6 +472,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     locals[data.name] = pkgPath;
   });
 
+  console.log('BUILD CSS IMPORTS');
   // Build up an ordered list of CSS imports for each local package.
   Object.keys(locals).forEach(name => {
     const data = pkgData[name];
@@ -522,6 +524,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     });
   });
 
+  console.log('UPDATE METAPACKAGE');
   // Update the metapackage.
   let pkgMessages = ensureMetaPackage();
   if (pkgMessages.length > 0) {
@@ -532,6 +535,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     messages[pkgName] = messages[pkgName].concat(pkgMessages);
   }
 
+  console.log('VALIDATE EACH PACKAGE');
   // Validate each package.
   for (const name in locals) {
     // application-top is handled elsewhere
@@ -566,6 +570,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     }
   }
 
+  console.log('ENSURE ICON SVG IMPORTS');
   // ensure the icon svg imports
   pkgMessages = await ensureUiComponents(pkgPaths['@jupyterlab/ui-components']);
   if (pkgMessages.length > 0) {
@@ -576,6 +581,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     messages[pkgName] = messages[pkgName].concat(pkgMessages);
   }
 
+  console.log('HANDLE TOPLEVEL PACKAGE');
   // Handle the top level package.
   const corePath = path.resolve('.', 'package.json');
   const coreData: any = utils.readJSONFile(corePath);
@@ -583,6 +589,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     messages['top'] = ['Update package.json'];
   }
 
+  console.log('HANDLE REFS');
   // Handle the refs in the top level tsconfigdoc.json
   const tsConfigDocExclude = [
     'application-extension',
@@ -599,6 +606,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     });
   utils.writeJSONFile(tsConfigdocPath, tsConfigdocData);
 
+  console.log('BUILDUTILS');
   // Handle buildutils
   ensureBuildUtils();
 
