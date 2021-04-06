@@ -27,6 +27,7 @@ const MISSING: Dict<string[]> = {
   '@jupyterlab/coreutils': ['path'],
   '@jupyterlab/buildutils': ['path', 'webpack'],
   '@jupyterlab/builder': ['path'],
+  '@jupyterlab/docprovider': ['buffer'],
   '@jupyterlab/testutils': ['fs', 'path'],
   '@jupyterlab/vega5-extension': ['vega-embed']
 };
@@ -439,9 +440,6 @@ function ensureBuildUtils() {
  * Ensure the repo integrity.
  */
 export async function ensureIntegrity(): Promise<boolean> {
-  // Handle buildutils
-  ensureBuildUtils();
-
   const messages: Dict<string[]> = {};
 
   // Pick up all the package versions.
@@ -600,6 +598,9 @@ export async function ensureIntegrity(): Promise<boolean> {
       return { path: './' + path.relative('.', pth) };
     });
   utils.writeJSONFile(tsConfigdocPath, tsConfigdocData);
+
+  // Handle buildutils
+  ensureBuildUtils();
 
   // Handle the JupyterLab application top package.
   pkgMessages = ensureJupyterlab();
