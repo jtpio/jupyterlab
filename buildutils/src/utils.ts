@@ -296,6 +296,7 @@ export function getPackageGraph(): DepGraph<Dict<unknown>> {
         if (depName in locals) {
           depData = locals[depName];
         } else {
+          console.log('REQUIRE PACKAGE', name, depName);
           depData = requirePackage(name, depName);
         }
         graph.addNode(depName, depData);
