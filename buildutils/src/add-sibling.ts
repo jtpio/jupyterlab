@@ -51,14 +51,14 @@ if (fs.existsSync(path.join(packagePath, 'node_modules'))) {
 // Make sure composite is set to true in the new package.
 const packageTsconfigPath = path.join(packagePath, 'tsconfig.json');
 if (fs.existsSync(packageTsconfigPath)) {
-  const packageTsconfig = utils.readJSONFile(packageTsconfigPath);
+  const packageTsconfig = fs.readJSONSync(packageTsconfigPath);
   packageTsconfig.compilerOptions.composite = true;
   utils.writeJSONFile(packageTsconfigPath, packageTsconfig);
 }
 
 // Get the package.json of the extension.
 const pkgJSONPath = path.join(packagePath, 'package.json');
-const data = utils.readJSONFile(pkgJSONPath);
+const data = fs.readJSONSync(pkgJSONPath);
 if (data.private !== true) {
   data.publishConfig = {};
   data.publishConfig.access = 'public';
@@ -72,7 +72,7 @@ const tsconfigPath = path.join(
   'metapackage',
   'tsconfig.json'
 );
-const tsconfig = utils.readJSONFile(tsconfigPath);
+const tsconfig = fs.readJSONSync(tsconfigPath);
 tsconfig.references.push({
   path: path.join('..', '..', packageDirName)
 });

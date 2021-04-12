@@ -113,7 +113,7 @@ function pkgData(packagePath: string) {
   packagePath = path.join(packagePath, 'package.json');
   let data: any;
   try {
-    data = utils.readJSONFile(packagePath);
+    data = fs.readJSONSync(packagePath);
   } catch (e) {
     console.error('Skipping package ' + packagePath);
     return {};

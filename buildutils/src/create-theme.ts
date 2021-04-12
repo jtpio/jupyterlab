@@ -66,7 +66,7 @@ void inquirer.prompt(questions).then(answers => {
   }
   fs.copySync(path.resolve('.', 'packages', 'theme-light-extension'), dest);
   const jsonPath = path.join(dest, 'package.json');
-  const data = utils.readJSONFile(jsonPath);
+  const data = fs.readJSONSync(jsonPath);
   data.name = name;
   data.description = description;
   utils.writePackageData(jsonPath, data);

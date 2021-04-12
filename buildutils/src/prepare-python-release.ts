@@ -40,7 +40,7 @@ commander
     console.log('Checking for published packages...');
     utils.getCorePaths().forEach(async pkgPath => {
       const pkgJson = path.join(pkgPath, 'package.json');
-      const pkgData = utils.readJSONFile(pkgJson);
+      const pkgData = fs.readJSONSync(pkgJson);
       const specifier = `${pkgData.name}@${pkgData.version}`;
       let attempt = 0;
       while (attempt < 10) {

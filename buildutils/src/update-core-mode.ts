@@ -11,7 +11,7 @@ import * as utils from './utils';
 utils.run('jlpm integrity');
 
 // Get the dev mode package.json file.
-const data = utils.readJSONFile('./dev_mode/package.json');
+const data = fs.readJSONSync('./dev_mode/package.json');
 
 // Update the values that need to change and write to staging.
 data['jupyterlab']['buildDir'] = './build';

@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const utils = require('@jupyterlab/buildutils');
 
 let index = `<!DOCTYPE html>
 <!--
@@ -19,7 +18,7 @@ Distributed under the terms of the Modified BSD License.
 <h2>JupyterLab Packages</h2>
 <div style='display:flex;flex-direction:column'>`;
 
-const data = utils.readJSONFile('./package.json');
+const data = fs.readJSONSync('./package.json');
 const pkgs = Object.keys(data.dependencies);
 pkgs.forEach(function (pkg) {
   const name = pkg.split('/')[1];

@@ -257,7 +257,7 @@ export async function ensurePackage(
   // Handle typedoc config output.
   const tdOptionsPath = path.join(pkgPath, 'tdoptions.json');
   if (fs.existsSync(tdOptionsPath)) {
-    const tdConfigData = utils.readJSONFile(tdOptionsPath);
+    const tdConfigData = fs.readJSONSync(tdOptionsPath);
     const pkgDirName = pkgPath.split('/').pop();
     tdConfigData['out'] = `../../docs/api/${pkgDirName}`;
     utils.writeJSONFile(tdOptionsPath, tdConfigData);
@@ -280,7 +280,7 @@ export async function ensurePackage(
     data.name.indexOf('example-') === -1 &&
     Object.keys(references).length > 0
   ) {
-    const tsConfigData = utils.readJSONFile(tsConfigPath);
+    const tsConfigData = fs.readJSONSync(tsConfigPath);
     tsConfigData.references = [];
     Object.keys(references).forEach(name => {
       tsConfigData.references.push({ path: references[name] });
@@ -290,7 +290,7 @@ export async function ensurePackage(
 
   // Inherit from the base tsconfig.
   if (fs.existsSync(tsConfigPath)) {
-    const tsConfigData = utils.readJSONFile(tsConfigPath);
+    const tsConfigData = fs.readJSONSync(tsConfigPath);
     tsConfigData.references = [];
     Object.keys(references).forEach(name => {
       tsConfigData.references.push({ path: references[name] });
@@ -325,7 +325,7 @@ export async function ensurePackage(
       testReferences[name] = ref.split(path.sep).join('/');
     });
 
-    const tsConfigTestData = utils.readJSONFile(tsConfigTestPath);
+    const tsConfigTestData = fs.readJSONSync(tsConfigTestPath);
     tsConfigTestData.references = [];
     Object.keys(testReferences).forEach(name => {
       tsConfigTestData.references.push({ path: testReferences[name] });

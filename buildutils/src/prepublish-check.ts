@@ -12,7 +12,7 @@ utils.run('npm run clean:slate');
 utils.run('lerna run prepublishOnly');
 
 utils.getLernaPaths().forEach(pkgPath => {
-  const pkgData = utils.readJSONFile(path.join(pkgPath, 'package.json'));
+  const pkgData = fs.readJSONSync(path.join(pkgPath, 'package.json'));
   const name = pkgData.name;
 
   // Skip private packages.

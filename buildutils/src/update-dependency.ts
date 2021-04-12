@@ -4,6 +4,7 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as utils from './utils';
 import packageJson from 'package-json';
@@ -145,7 +146,7 @@ async function handlePackage(
   packagePath = path.join(packagePath, 'package.json');
   let data: any;
   try {
-    data = utils.readJSONFile(packagePath);
+    data = fs.readJSONSync(packagePath);
   } catch (e) {
     console.debug('Skipping package ' + packagePath);
     return;

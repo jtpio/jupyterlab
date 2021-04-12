@@ -233,7 +233,7 @@ function ensureMetaPackage(): string[] {
   const basePath = path.resolve('.');
   const mpPath = path.join(basePath, 'packages', 'metapackage');
   const mpJson = path.join(mpPath, 'package.json');
-  const mpData = utils.readJSONFile(mpJson);
+  const mpData = fs.readJSONSync(mpJson);
   const messages: string[] = [];
   const seen: Dict<boolean> = {};
 
@@ -285,7 +285,7 @@ function ensureMetaPackage(): string[] {
 function ensureJupyterlab(): string[] {
   const basePath = path.resolve('.');
   const corePath = path.join(basePath, 'dev_mode', 'package.json');
-  const corePackage = utils.readJSONFile(corePath);
+  const corePackage = fs.readJSONSync(corePath);
 
   corePackage.jupyterlab.extensions = {};
   corePackage.jupyterlab.mimeExtensions = {};
@@ -304,7 +304,7 @@ function ensureJupyterlab(): string[] {
     const dataPath = path.join(pkgPath, 'package.json');
     let data: any;
     try {
-      data = utils.readJSONFile(dataPath);
+      data = fs.readJSONSync(dataPath);
     } catch (e) {
       return;
     }
@@ -389,7 +389,7 @@ function ensureJupyterlab(): string[] {
     const dataPath = path.join(pkgPath, 'package.json');
     let data: any;
     try {
-      data = utils.readJSONFile(dataPath);
+      data = fs.readJSONSync(dataPath);
     } catch (e) {
       return;
     }
@@ -419,7 +419,7 @@ function ensureBuildUtils() {
   const basePath = path.resolve('.');
   ['builder', 'buildutils'].forEach(packageName => {
     const utilsPackage = path.join(basePath, packageName, 'package.json');
-    const utilsData = utils.readJSONFile(utilsPackage);
+    const utilsData = fs.readJSONSync(utilsPackage);
     for (const name in utilsData.bin) {
       const src = path.join(basePath, packageName, utilsData.bin[name]);
       const dest = path.join(basePath, 'node_modules', '.bin', name);
@@ -458,7 +458,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     // Read in the package.json.
     let data: any;
     try {
-      data = utils.readJSONFile(path.join(pkgPath, 'package.json'));
+      data = fs.readJSONSync(path.join(pkgPath, 'package.json'));
     } catch (e) {
       console.error(e);
       return;
@@ -577,7 +577,7 @@ export async function ensureIntegrity(): Promise<boolean> {
 
   // Handle the top level package.
   const corePath = path.resolve('.', 'package.json');
-  const coreData: any = utils.readJSONFile(corePath);
+  const coreData: any = fs.readJSONSync(corePath);
   if (utils.writePackageData(corePath, coreData)) {
     messages['top'] = ['Update package.json'];
   }
@@ -589,7 +589,7 @@ export async function ensureIntegrity(): Promise<boolean> {
     'nbconvert-css'
   ];
   const tsConfigdocPath = path.resolve('.', 'tsconfigdoc.json');
-  const tsConfigdocData = utils.readJSONFile(tsConfigdocPath);
+  const tsConfigdocData = fs.readJSONSync(tsConfigdocPath);
   tsConfigdocData.references = utils
     .getCorePaths()
     .filter(pth => !tsConfigDocExclude.some(pkg => pth.includes(pkg)))

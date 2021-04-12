@@ -4,6 +4,7 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as utils from './utils';
 import packageJson from 'package-json';
@@ -29,7 +30,7 @@ export async function getDependency(name: string): Promise<string> {
     const packagePath = path.join(pkgRoot, 'package.json');
     let data: any;
     try {
-      data = utils.readJSONFile(packagePath);
+      data = fs.readJSONSync(packagePath);
     } catch (e) {
       return;
     }

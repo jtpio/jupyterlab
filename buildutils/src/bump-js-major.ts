@@ -5,6 +5,7 @@
 
 import commander from 'commander';
 import semver from 'semver';
+import fs from 'fs-extra';
 import path from 'path';
 import * as utils from './utils';
 
@@ -59,7 +60,7 @@ commander
     const lut: { [key: string]: { [key: string]: string } } = {};
     utils.getCorePaths().forEach(corePath => {
       const pkgDataPath = path.join(corePath, 'package.json');
-      const data = utils.readJSONFile(pkgDataPath);
+      const data = fs.readJSONSync(pkgDataPath);
       lut[data.name] = data.dependencies || {};
     });
 

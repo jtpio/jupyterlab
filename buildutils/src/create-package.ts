@@ -30,7 +30,7 @@ void inquirer.prompt(questions).then(answers => {
   }
   fs.copySync(path.resolve(path.join(__dirname, '..', 'template')), dest);
   const jsonPath = path.join(dest, 'package.json');
-  const data = utils.readJSONFile(jsonPath);
+  const data = fs.readJSONSync(jsonPath);
   if (name.indexOf('@jupyterlab/') === -1) {
     name = '@jupyterlab/' + name;
   }
