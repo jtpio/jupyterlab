@@ -73,6 +73,8 @@ export function writePackageData(
 
 /**
  * Read a json file.
+ *
+ * TODO: remove in 4.0.0
  */
 export function readJSONFile(filePath: string): any {
   try {
