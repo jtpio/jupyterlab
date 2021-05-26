@@ -123,6 +123,11 @@ const CELL_OUTPUT_COLLAPSER_CLASS = 'jp-Cell-outputCollapser';
 const READONLY_CLASS = 'jp-mod-readOnly';
 
 /**
+ * The class name added to the cell when dirty.
+ */
+const DIRTY_CLASS = 'jp-mod-dirty';
+
+/**
  * The class name added to code cells.
  */
 const CODE_CELL_CLASS = 'jp-CodeCell';
@@ -727,6 +732,7 @@ export class CodeCell extends Cell<ICodeCellModel> {
       this.outputHidden = !this.outputHidden;
     });
     model.stateChanged.connect(this.onStateChanged, this);
+    model.contentChanged.connect(this.onContentChanged, this);
   }
 
   /**
@@ -893,6 +899,13 @@ export class CodeCell extends Cell<ICodeCellModel> {
   }
 
   /**
+   * Whether to cell has been edited since the last run.
+   */
+  get isDirty(): boolean {
+    return this._isDirty;
+  }
+
+  /**
    * Handle the input being hidden.
    *
    * #### Notes
@@ -955,10 +968,27 @@ export class CodeCell extends Cell<ICodeCellModel> {
   protected onStateChanged(model: ICellModel, args: IChangedArgs<any>): void {
     switch (args.name) {
       case 'executionCount':
+        this._executedCode = model.value.text.trim();
+        this._isDirty = false;
+        this.removeClass(DIRTY_CLASS);
         this.setPrompt(`${(model as ICodeCellModel).executionCount || ''}`);
         break;
       default:
         break;
+    }
+  }
+
+  /**
+   * Handle changes in the cell content.
+   */
+  protected onContentChanged(model: ICellModel): void {
+    if (
+      !this._isDirty &&
+      this._executedCode !== null &&
+      this._executedCode != model.value.text.trim()
+    ) {
+      this._isDirty = true;
+      this.addClass(DIRTY_CLASS);
     }
   }
 
@@ -998,6 +1028,8 @@ export class CodeCell extends Cell<ICodeCellModel> {
     this.toggleClass(NO_OUTPUTS_CLASS, force);
   }
 
+  private _isDirty = false;
+  private _executedCode: string | null = null;
   private _rendermime: IRenderMimeRegistry;
   private _outputHidden = false;
   private _outputsScrolled: boolean;
