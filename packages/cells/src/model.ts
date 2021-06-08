@@ -697,24 +697,11 @@ export class CodeCellModel extends CellModel implements ICodeCellModel {
     // but for performance reason, the diff status is stored in a boolean.
     return this._isDirty;
   }
-  set isDirty(v: boolean) {
-    if (v !== this._isDirty) {
-      if (!v) {
-        this._executedCode = this.value.text.trim();
-      }
-      this._isDirty = v;
-      this.stateChanged.emit({
-        name: 'isDirty',
-        oldValue: !v,
-        newValue: v
-      });
-    }
-  }
 
-  clearExecution() {
+  clearExecution(): void {
     this.outputs.clear();
     this.executionCount = null;
-    this.isDirty = false;
+    this._setDirty(false);
     this.metadata.delete('execution');
   }
 
@@ -807,7 +794,8 @@ export class CodeCellModel extends CellModel implements ICodeCellModel {
    */
   protected onGenericChange(): void {
     if ((this.sharedModel as models.YCodeCell).execution_count !== null) {
-      this.isDirty = this._executedCode !== this.value.text.trim();
+      const isDirty = this._executedCode !== this.value.text.trim();
+      this._setDirty(isDirty);
     }
     this.contentChanged.emit(void 0);
   }
@@ -860,8 +848,28 @@ export class CodeCellModel extends CellModel implements ICodeCellModel {
       newValue: args.newValue
     });
     if (args.newValue && this.isDirty) {
-      this.isDirty = false;
+      this._setDirty(false);
     }
+  }
+
+  /**
+   * Set the cell as dirty.
+   *
+   * @param v The dirty state (true or false)
+   */
+  private _setDirty(v: boolean) {
+    if (v === this._isDirty) {
+      return;
+    }
+    if (!v) {
+      this._executedCode = this.value.text.trim();
+    }
+    this._isDirty = v;
+    this.stateChanged.emit({
+      name: 'isDirty',
+      oldValue: !v,
+      newValue: v
+    });
   }
 
   private _executedCode: string = '';
@@ -915,7 +923,7 @@ namespace Private {
   export function collapseChanged(
     metadata: IObservableJSON,
     args: IObservableMap.IChangedArgs<JSONValue>
-  ) {
+  ): void {
     if (args.key === 'collapsed') {
       const jupyter = (metadata.get('jupyter') || {}) as JSONObject;
       const { outputs_hidden, ...newJupyter } = jupyter;
