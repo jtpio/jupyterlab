@@ -179,12 +179,12 @@ export namespace ServiceManager {
     /**
      * The builder for the manager.
      */
-    readonly builder: Builder.IManager;
+    readonly builder?: Builder.IManager;
 
     /**
      * The contents manager for the manager.
      */
-    readonly contents: Contents.IManager;
+    readonly contents?: Contents.IManager;
 
     /**
      * Test whether the manager is ready.
@@ -204,32 +204,32 @@ export namespace ServiceManager {
     /**
      * The session manager for the manager.
      */
-    readonly sessions: Session.IManager;
+    readonly sessions?: Session.IManager;
 
     /**
      * The session manager for the manager.
      */
-    readonly kernelspecs: KernelSpec.IManager;
+    readonly kernelspecs?: KernelSpec.IManager;
 
     /**
      * The setting manager for the manager.
      */
-    readonly settings: Setting.IManager;
+    readonly settings?: Setting.IManager;
 
     /**
      * The terminals manager for the manager.
      */
-    readonly terminals: Terminal.IManager;
+    readonly terminals?: Terminal.IManager;
 
     /**
      * The workspace manager for the manager.
      */
-    readonly workspaces: Workspace.IManager;
+    readonly workspaces?: Workspace.IManager;
 
     /**
      * The nbconvert manager for the manager.
      */
-    readonly nbconvert: NbConvert.IManager;
+    readonly nbconvert?: NbConvert.IManager;
 
     /**
      * A signal emitted when there is a connection failure with the server.
