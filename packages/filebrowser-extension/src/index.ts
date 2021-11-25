@@ -735,6 +735,7 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
         }
 
         let type = '';
+        let contentDisposition = '';
         let blob;
 
         // fetch the file from the URL
@@ -742,6 +743,7 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
           const req = await fetch(url);
           blob = await req.blob();
           type = req.headers.get('Content-Type') ?? '';
+          contentDisposition = req.headers.get('Content-Disposition') ?? '';
         } catch (reason) {
           if (reason.response && reason.response.status !== 200) {
             reason.message = trans.__('Could not open URL: %1', url);
@@ -749,10 +751,15 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
           return showErrorMessage(trans.__('Cannot fetch'), reason);
         }
 
+        // get the name of the file
+        // TODO: parse filename from the content disposition header
+        const name = contentDisposition
+          ? contentDisposition
+          : PathExt.basename(url);
+        const file = new File([blob], name, { type });
+
         // upload the content of the file to the server
         try {
-          const name = PathExt.basename(url);
-          const file = new File([blob], name, { type });
           const model = await browser.model.upload(file);
           return commands.execute('docmanager:open', {
             path: model.path
