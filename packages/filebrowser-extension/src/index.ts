@@ -741,9 +741,9 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
         // fetch the file from the URL
         try {
           const req = await fetch(url);
-          blob = await req.blob();
           type = req.headers.get('Content-Type') ?? '';
           contentDisposition = req.headers.get('Content-Disposition') ?? '';
+          blob = await req.blob();
         } catch (reason) {
           if (reason.response && reason.response.status !== 200) {
             reason.message = trans.__('Could not open URL: %1', url);
@@ -751,11 +751,9 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
           return showErrorMessage(trans.__('Cannot fetch'), reason);
         }
 
-        // get the name of the file
-        // TODO: parse filename from the content disposition header
-        const name = contentDisposition
-          ? contentDisposition
-          : PathExt.basename(url);
+        // get the name of the file from the header, default to basename otherwise
+        const filename = contentDisposition.split('filename=')[1];
+        const name = filename ? filename : PathExt.basename(url);
         const file = new File([blob], name, { type });
 
         // upload the content of the file to the server
