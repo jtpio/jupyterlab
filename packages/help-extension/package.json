@@ -44,6 +44,7 @@
     "@jupyterlab/services": "^7.0.0-alpha.0",
     "@jupyterlab/translation": "^4.0.0-alpha.0",
     "@jupyterlab/ui-components": "^4.0.0-alpha.15",
+    "@lumino/algorithm": "^1.9.1",
     "@lumino/coreutils": "^1.11.1",
     "@lumino/signaling": "^1.10.1",
     "@lumino/virtualdom": "^1.14.1",
