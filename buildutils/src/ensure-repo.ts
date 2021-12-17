@@ -24,6 +24,8 @@ import {
 
 type Dict<T> = { [key: string]: T };
 
+type CoreData = Map<string, any>;
+
 // URL config for this branch
 // Source and target branches
 // Target RTD version name
@@ -402,36 +404,10 @@ function ensureMetaPackage(): string[] {
   return messages;
 }
 
-/**
- * Ensure the jupyterlab application package.
- */
-function ensureJupyterlabApplication({
-  corePathPackage,
-  linkedPackages = true,
-  version = true
-}: {
-  corePathPackage: string;
-  linkedPackages?: boolean;
-  version?: boolean;
-}): string[] {
-  const basePath = path.resolve('.');
-  const corePath = path.join(basePath, corePathPackage);
-  const corePackage = utils.readJSONFile(corePath);
-
-  corePackage.jupyterlab.extensions = {};
-  corePackage.jupyterlab.mimeExtensions = {};
-  corePackage.jupyterlab.linkedPackages = {};
-  // start with known external dependencies
-  corePackage.dependencies = Object.assign(
-    {},
-    corePackage.jupyterlab.externalExtensions
-  );
-  corePackage.resolutions = {};
-
-  const singletonPackages: string[] = corePackage.jupyterlab.singletonPackages;
+function getCoreData(corePaths: string[]): CoreData {
   const coreData = new Map<string, any>();
 
-  utils.getCorePaths().forEach(pkgPath => {
+  corePaths.forEach(pkgPath => {
     const dataPath = path.join(pkgPath, 'package.json');
     let data: any;
     try {
@@ -441,6 +417,32 @@ function ensureJupyterlabApplication({
     }
 
     coreData.set(data.name, data);
+  });
+
+  return coreData;
+}
+
+function ensureCorePackage(corePackage: any, corePaths: string[]): any {
+  corePackage.jupyterlab.extensions = {};
+  corePackage.jupyterlab.linkedPackages = {};
+  // start with known external dependencies
+  corePackage.dependencies = Object.assign(
+    {},
+    corePackage.jupyterlab.externalExtensions
+  );
+  corePackage.resolutions = {};
+
+  const singletonPackages: string[] = corePackage.jupyterlab.singletonPackages;
+  const coreData = getCoreData(corePaths);
+
+  corePaths.forEach(pkgPath => {
+    const dataPath = path.join(pkgPath, 'package.json');
+    let data: any;
+    try {
+      data = utils.readJSONFile(dataPath);
+    } catch (e) {
+      return;
+    }
 
     // If the package has a tokens.ts file, make sure it is noted as a singleton
     if (
@@ -488,6 +490,47 @@ function ensureJupyterlabApplication({
     );
   }
 
+  return coreData;
+}
+
+function ensureFederatedExample(): string[] {
+  const basePath = path.resolve('.');
+  const corePath = path.join(
+    basePath,
+    'examples',
+    'federated',
+    'core_package',
+    'package.json'
+  );
+  const corePackage = utils.readJSONFile(corePath);
+  // the list of dependencies might differ from the main JupyterLab application
+  const dependencies = new Set(Object.keys(corePackage.dependencies));
+  const corePaths = utils.getCorePaths().filter(p => {
+    return dependencies.has(`@jupyterlab/${path.basename(p)}`);
+  });
+
+  ensureCorePackage(corePackage, corePaths);
+
+  // Write the package.json back to disk.
+  if (utils.writePackageData(corePath, corePackage)) {
+    return ['Updated federated example'];
+  }
+  return [];
+}
+
+/**
+ * Ensure the jupyterlab application package.
+ */
+function ensureJupyterlab(): string[] {
+  const basePath = path.resolve('.');
+  const corePath = path.join(basePath, 'dev_mode', 'package.json');
+  const corePackage = utils.readJSONFile(corePath);
+  const corePaths = utils.getCorePaths();
+
+  ensureCorePackage(corePackage, corePaths);
+  corePackage.jupyterlab.mimeExtensions = {};
+
+  const coreData = getCoreData(corePaths);
   coreData.forEach((data, name) => {
     // Determine if the package wishes to be included in the top-level
     // dependencies.
@@ -516,33 +559,29 @@ function ensureJupyterlabApplication({
     });
   });
 
-  if (linkedPackages) {
-    utils.getLernaPaths().forEach(pkgPath => {
-      const dataPath = path.join(pkgPath, 'package.json');
-      let data: any;
-      try {
-        data = utils.readJSONFile(dataPath);
-      } catch (e) {
-        return;
-      }
-      // Skip private packages.
-      if (data.private === true) {
-        return;
-      }
+  utils.getLernaPaths().forEach(pkgPath => {
+    const dataPath = path.join(pkgPath, 'package.json');
+    let data: any;
+    try {
+      data = utils.readJSONFile(dataPath);
+    } catch (e) {
+      return;
+    }
+    // Skip private packages.
+    if (data.private === true) {
+      return;
+    }
 
-      // watch all src, build, and test files in the Jupyterlab project
-      const relativePath = utils.ensureUnixPathSep(
-        path.join('..', path.relative(basePath, pkgPath))
-      );
-      corePackage.jupyterlab.linkedPackages[data.name] = relativePath;
-    });
-  }
+    // watch all src, build, and test files in the Jupyterlab project
+    const relativePath = utils.ensureUnixPathSep(
+      path.join('..', path.relative(basePath, pkgPath))
+    );
+    corePackage.jupyterlab.linkedPackages[data.name] = relativePath;
+  });
 
-  if (version) {
-    // Update the dev mode version.
-    const curr = utils.getPythonVersion();
-    corePackage.jupyterlab.version = curr;
-  }
+  // Update the dev mode version.
+  const curr = utils.getPythonVersion();
+  corePackage.jupyterlab.version = curr;
 
   // Write the package.json back to disk.
   if (utils.writePackageData(corePath, corePackage)) {
@@ -771,25 +810,13 @@ export async function ensureIntegrity(): Promise<boolean> {
   }
 
   // Handle the federated example application
-  ensureJupyterlabApplication({
-    corePathPackage: path.join(
-      'examples',
-      'federated',
-      'core_package',
-      'package.json'
-    ),
-    linkedPackages: false,
-    version: false
-  });
-  // TODO: re-add
-  // if (pkgMessages.length > 0) {
-  //   messages['@jupyterlab/example-federated-core'] = pkgMessages;
-  // }
+  pkgMessages = ensureFederatedExample();
+  if (pkgMessages.length > 0) {
+    messages['@jupyterlab/example-federated-core'] = pkgMessages;
+  }
 
   // Handle the JupyterLab application top package.
-  pkgMessages = ensureJupyterlabApplication({
-    corePathPackage: path.join('dev_mode', 'package.json')
-  });
+  pkgMessages = ensureJupyterlab();
   if (pkgMessages.length > 0) {
     messages['@application/top'] = pkgMessages;
   }
