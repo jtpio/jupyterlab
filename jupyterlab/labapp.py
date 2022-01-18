@@ -16,7 +16,6 @@ from jupyter_server.serverapp import flags
 from jupyter_server.utils import url_path_join as ujoin
 
 from jupyterlab_server import WORKSPACE_EXTENSION, LabServerApp, slugify
-from nbclassic.shim import NBClassicConfigShimMixin
 from traitlets import Bool, Instance, Unicode, default
 
 from ._version import __version__
@@ -475,7 +474,7 @@ aliases.update({
 })
 
 
-class LabApp(NBClassicConfigShimMixin, LabServerApp):
+class LabApp(LabServerApp):
     version = version
 
     name = "lab"
