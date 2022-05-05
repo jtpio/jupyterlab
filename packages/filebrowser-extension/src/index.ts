@@ -64,6 +64,8 @@ import { CommandRegistry } from '@lumino/commands';
 import { ContextMenu } from '@lumino/widgets';
 import { JSONObject } from '@lumino/coreutils';
 
+import { parse } from '@tinyhttp/content-disposition';
+
 const FILE_BROWSER_FACTORY = 'FileBrowser';
 const FILE_BROWSER_PLUGIN_ID = '@jupyterlab/filebrowser-extension:browser';
 
@@ -738,13 +740,19 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
         }
 
         let type = '';
+        let contentDispositionHeader = '';
         let blob;
 
         // fetch the file from the URL
         try {
-          const req = await fetch(url);
-          blob = await req.blob();
-          type = req.headers.get('Content-Type') ?? '';
+          const response = await fetch(url);
+          response.headers.forEach(console.log);
+          type = response.headers.get('Content-Type') ?? '';
+          contentDispositionHeader =
+            response.headers.get('Content-Disposition') ?? '';
+          // test
+          contentDispositionHeader = "attachment; filename*=UTF-8''Intro.ipynb";
+          blob = await response.blob();
         } catch (reason) {
           if (reason.response && reason.response.status !== 200) {
             reason.message = trans.__('Could not open URL: %1', url);
@@ -754,7 +762,9 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
 
         // upload the content of the file to the server
         try {
-          const name = PathExt.basename(url);
+          const filename = parse(contentDispositionHeader).parameters
+            .filename as string;
+          const name = filename || PathExt.basename(url);
           const file = new File([blob], name, { type });
           const model = await browser.model.upload(file);
           return commands.execute('docmanager:open', {
