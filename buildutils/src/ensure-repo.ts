@@ -73,6 +73,7 @@ const UNUSED: Dict<string[]> = {
     '@babel/core',
     '@babel/preset-env',
     'babel-loader',
+    'buffer',
     'css-loader',
     'path-browserify',
     'process',
