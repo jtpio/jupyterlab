@@ -118,7 +118,7 @@ dev = [
     "coverage",
     "hatch",
     "bump2version",
-    "ruff==0.0.230",
+    "ruff==0.0.237",
     "black[jupyter]==22.12.0"
 ]
 
