@@ -117,7 +117,7 @@ dev = [
     "coverage",
     "hatch",
     "bump2version",
-    "ruff==0.3.0",
+    "ruff==0.3.3",
 ]
 
 [tool.check-wheel-contents]
