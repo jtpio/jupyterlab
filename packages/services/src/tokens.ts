@@ -1,7 +1,19 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { Contents, ServerConnection } from '.';
+import {
+  Contents,
+  Event,
+  Kernel,
+  KernelSpec,
+  NbConvert,
+  ServerConnection,
+  Session,
+  Setting,
+  Terminal,
+  User,
+  Workspace
+} from '.';
 import { ServiceManager } from './manager';
 
 import { Token } from '@lumino/coreutils';
@@ -23,6 +35,62 @@ export const IDefaultDrive = new Token<Contents.IDrive>(
 );
 
 /**
+ * The event manager token.
+ */
+export const IEventManager = new Token<Event.IManager>(
+  '@jupyterlab/services:IEventManager',
+  'The event manager token.'
+);
+
+/**
+ * The kernel manager token.
+ */
+export const IKernelManager = new Token<Kernel.IManager>(
+  '@jupyterlab/services:IKernelManager',
+  'The kernel manager token.'
+);
+
+/**
+ * The kernel spec manager token.
+ */
+export const IKernelSpecManager = new Token<KernelSpec.IManager>(
+  '@jupyterlab/services:IKernelSpecManager',
+  'The kernel spec manager token.'
+);
+
+/**
+ * The nbconvert manager token.
+ */
+export const INbConvertManager = new Token<NbConvert.IManager>(
+  '@jupyterlab/services:INbConvertManager',
+  'The nbconvert manager token.'
+);
+
+/**
+ * The server settings token.
+ */
+export const IServerSettings = new Token<ServerConnection.ISettings>(
+  '@jupyterlab/services:IServerSettings',
+  'The server settings for the application.'
+);
+
+/**
+ * The session manager token.
+ */
+export const ISessionManager = new Token<Session.IManager>(
+  '@jupyterlab/services:ISessionManager',
+  'The session manager token.'
+);
+
+/**
+ * The setting manager token.
+ */
+export const ISettingManager = new Token<Setting.IManager>(
+  '@jupyterlab/services:ISettingManager',
+  'The setting manager token.'
+);
+
+/**
  * The default service manager token.
  */
 export const IServiceManager = new Token<ServiceManager.IManager>(
@@ -31,9 +99,25 @@ export const IServiceManager = new Token<ServiceManager.IManager>(
 );
 
 /**
- * The default server settings token.
+ * The terminal manager token.
  */
-export const IServerSettings = new Token<ServerConnection.ISettings>(
-  '@jupyterlab/services:IServerSettings',
-  'The server settings for the application.'
+export const ITerminalManager = new Token<Terminal.IManager>(
+  '@jupyterlab/services:ITerminalManager',
+  'The terminal manager token.'
+);
+
+/**
+ * The user manager token.
+ */
+export const IUserManager = new Token<User.IManager>(
+  '@jupyterlab/services:IUserManager',
+  'The user manager token.'
+);
+
+/**
+ * The workspace manager token.
+ */
+export const IWorkspaceManager = new Token<Workspace.IManager>(
+  '@jupyterlab/services:IWorkspaceManager',
+  'The workspace manager token.'
 );
