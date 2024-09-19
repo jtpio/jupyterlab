@@ -4,6 +4,7 @@
  */
 
 import { PageConfig } from '@jupyterlab/coreutils';
+import { PluginRegistry } from '@lumino/coreutils';
 
 import './style.js';
 
@@ -55,6 +56,7 @@ export async function main() {
      };
   }
 
+  var pluginRegistry = new PluginRegistry();
   var JupyterLab = require('@jupyterlab/application').JupyterLab;
   var disabled = [];
   var deferred = [];
@@ -191,7 +193,29 @@ export async function main() {
     console.error(reason);
   });
 
+  // 1. First register the service manager plugins
+  const serviceManagerPlugins = [];
+  try {
+    let ext = require('@jupyterlab/application-extension/lib/services.js');
+    // TODO: use something else?
+    ext.__scope__ = '@jupyterlab/services-extension';
+    for (let plugin of activePlugins(ext)) {
+      serviceManagerPlugins.push(plugin);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  pluginRegistry.registerPlugins(serviceManagerPlugins);
+
+  // 2. Get the service manager plugin
+  const IServiceManager = require('@jupyterlab/services').IServiceManager;
+  const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);
+  console.log('Service Manager:', serviceManager);
+
   const lab = new JupyterLab({
+    pluginRegistry,
+    serviceManager,
     mimeExtensions,
     disabled: {
       matches: disabled,
@@ -205,8 +229,11 @@ export async function main() {
     },
     availablePlugins: allPlugins
   });
-  register.forEach(function(item) { lab.registerPluginModule(item); });
 
+  // 3. Register all regular plugins
+  pluginRegistry.registerPlugins(register);
+
+  // 4. Start the application
   lab.start({ ignorePlugins, bubblingKeydown: true });
 
   // Expose global app instance when in dev mode or when toggled explicitly.
