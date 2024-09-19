@@ -233,6 +233,19 @@ const workspaceManagerPlugin: JupyterFrontEndPlugin<Workspace.IManager> = {
 };
 
 /**
+ * The default server settings plugin.
+ */
+const serverSettingsPlugin: JupyterFrontEndPlugin<ServerConnection.ISettings> =
+  {
+    id: '@jupyterlab/application-extension:server-settings',
+    autoStart: true,
+    provides: IServerSettings,
+    activate: (app: JupyterFrontEnd): ServerConnection.ISettings => {
+      return ServerConnection.makeSettings();
+    }
+  };
+
+/**
  * Instantiate a new service manager.
  */
 const serviceManagerPlugin: JupyterFrontEndPlugin<ServiceManager.IManager> = {
@@ -286,32 +299,17 @@ const serviceManagerPlugin: JupyterFrontEndPlugin<ServiceManager.IManager> = {
   }
 };
 
-/**
- * The default server settings plugin.
- */
-const serverSettingsPlugin: JupyterFrontEndPlugin<ServerConnection.ISettings> =
-  {
-    id: '@jupyterlab/application-extension:server-settings',
-    autoStart: true,
-    provides: IServerSettings,
-    activate: (app: JupyterFrontEnd): ServerConnection.ISettings => {
-      console.log('Using the default server settings plugin');
-      console.log('app: ', app);
-      return ServerConnection.makeSettings();
-    }
-  };
-
 export default [
   contentsManagerPlugin,
   defaultDrivePlugin,
   eventManagerPlugin,
-  serverSettingsPlugin,
-  serviceManagerPlugin,
   kernelManagerPlugin,
   kernelSpecManagerPlugin,
   nbConvertManagerPlugin,
   sessionManagerPlugin,
   settingManagerPlugin,
+  serverSettingsPlugin,
+  serviceManagerPlugin,
   terminalManagerPlugin,
   userManagerPlugin,
   workspaceManagerPlugin

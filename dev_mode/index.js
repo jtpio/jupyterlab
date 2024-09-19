@@ -93,12 +93,9 @@ export async function main() {
   const allPlugins = [];
 
   /**
-   * Iterate over active plugins in an extension.
-   *
-   * #### Notes
-   * This also populates the disabled, deferred, and ignored arrays.
+   * Get the plugins from an extension.
    */
-  function* activePlugins(extension) {
+  function getPlugins(extension) {
     // Handle commonjs or es2015 modules
     let exports;
     if (extension.hasOwnProperty('__esModule')) {
@@ -108,7 +105,17 @@ export async function main() {
       exports = extension;
     }
 
-    let plugins = Array.isArray(exports) ? exports : [exports];
+    return Array.isArray(exports) ? exports : [exports];
+  }
+
+  /**
+   * Iterate over active plugins in an extension.
+   *
+   * #### Notes
+   * This also populates the disabled, deferred, and ignored arrays.
+   */
+  function* activePlugins(extension) {
+    const plugins = getPlugins(extension);
     for (let plugin of plugins) {
       const isDisabled = PageConfig.Extension.isDisabled(plugin.id);
       allPlugins.push({
@@ -177,20 +184,35 @@ export async function main() {
   {{/each}}
 
 
+  let coreServiceManagerExtension;
   const serviceManagerPlugins = [];
-  // TODO: generalize for all service managre plugins
-  const IDefaultDrive = require('@jupyterlab/services').IDefaultDrive;
-  const IContentsManager = require('@jupyterlab/services').IContentsManager;
+
+  // 1. First register the service manager plugins
+  try {
+    coreServiceManagerExtension = require('@jupyterlab/application-extension/lib/services.js');
+    // TODO: use something else?
+    coreServiceManagerExtension.__scope__ = '@jupyterlab/services-extension';
+    // Get the core service manager plugins that are not disabled
+    for (let plugin of activePlugins(coreServiceManagerExtension)) {
+      serviceManagerPlugins.push(plugin);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  // Get a list of all service manager default tokens to check if a federated extension provides any of them, so it can be swapped
+  const allServiceManagerTokens = getPlugins(coreServiceManagerExtension).map(p => p.provides);
 
   // Add the federated extensions.
   const federatedExtensions = await Promise.allSettled(federatedExtensionPromises);
   federatedExtensions.forEach(p => {
     if (p.status === "fulfilled") {
       for (let plugin of activePlugins(p.value)) {
-        // TODO: handle more plugin types
-        if (plugin.provides === IDefaultDrive || plugin.provides === IContentsManager) {
+        if (allServiceManagerTokens.includes(plugin.provides)) {
+          // if one of the federated extensions provides a service manager token, add it to the service manager plugins
           serviceManagerPlugins.push(plugin);
         } else {
+          // otherwise, add it to the regular plugins
           register.push(plugin);
         }
       }
@@ -204,24 +226,12 @@ export async function main() {
     console.error(reason);
   });
 
-  // 1. First register the service manager plugins
-  try {
-    let ext = require('@jupyterlab/application-extension/lib/services.js');
-    // TODO: use something else?
-    ext.__scope__ = '@jupyterlab/services-extension';
-    for (let plugin of activePlugins(ext)) {
-      serviceManagerPlugins.push(plugin);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
+  // 2. Register the service manager plugins first
   pluginRegistry.registerPlugins(serviceManagerPlugins);
 
-  // 2. Get the service manager plugin
+  // 3. Get and resolve the service manager plugin
   const IServiceManager = require('@jupyterlab/services').IServiceManager;
   const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);
-  console.log('Service Manager:', serviceManager);
 
   const lab = new JupyterLab({
     pluginRegistry,
@@ -240,10 +250,10 @@ export async function main() {
     availablePlugins: allPlugins
   });
 
-  // 3. Register all regular plugins
+  // 4. Register all regular plugins
   pluginRegistry.registerPlugins(register);
 
-  // 4. Start the application
+  // 5. Start the application
   lab.start({ ignorePlugins, bubblingKeydown: true });
 
   // Expose global app instance when in dev mode or when toggled explicitly.
@@ -263,5 +273,4 @@ export async function main() {
     // Handle failures to restore after the timeout has elapsed.
     window.setTimeout(function() { report(errors); }, timeout);
   }
-
 }
