@@ -7,6 +7,14 @@ import { ServiceManager } from './manager';
 import { Token } from '@lumino/coreutils';
 
 /**
+ * The contents manager token.
+ */
+export const IContentsManager = new Token<Contents.IManager>(
+  '@jupyterlab/services:IContentsManager',
+  'The contents manager token.'
+);
+
+/**
  * The default drive token.
  */
 export const IDefaultDrive = new Token<Contents.IDrive>(

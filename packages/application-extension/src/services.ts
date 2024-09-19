@@ -10,7 +10,9 @@ import {
 
 import {
   Contents,
+  ContentsManager,
   Drive,
+  IContentsManager,
   IDefaultDrive,
   IServerSettings,
   IServiceManager,
@@ -19,6 +21,23 @@ import {
 } from '@jupyterlab/services';
 
 // TODO: move to a new `@jupyterlab/services-extension` package?
+
+const contentsManagerPlugin: JupyterFrontEndPlugin<Contents.IManager> = {
+  id: '@jupyterlab/application-extension:contents-manager',
+  autoStart: true,
+  provides: IContentsManager,
+  requires: [IDefaultDrive, IServerSettings],
+  activate: (
+    app: JupyterFrontEnd,
+    defaultDrive: Contents.IDrive,
+    serverSettings: ServerConnection.ISettings
+  ): Contents.IManager => {
+    return new ContentsManager({
+      defaultDrive,
+      serverSettings
+    });
+  }
+};
 
 /**
  * The default drive plugin.
@@ -44,15 +63,17 @@ const serviceManagerPlugin: JupyterFrontEndPlugin<ServiceManager.IManager> = {
   id: '@jupyterlab/application-extension:service-manager',
   autoStart: true,
   provides: IServiceManager,
-  optional: [IDefaultDrive, IServerSettings],
+  optional: [IContentsManager, IDefaultDrive, IServerSettings],
   activate: (
     app: JupyterFrontEnd,
-    defaultDrive: Contents.IDrive | null,
-    serverSettings: ServerConnection.ISettings | null
+    contents: Contents.IManager | undefined,
+    defaultDrive: Contents.IDrive | undefined,
+    serverSettings: ServerConnection.ISettings | undefined
   ): ServiceManager.IManager => {
     return new ServiceManager({
-      defaultDrive: defaultDrive ?? undefined,
-      serverSettings: serverSettings ?? undefined
+      contents,
+      defaultDrive,
+      serverSettings
     });
   }
 };
@@ -69,4 +90,9 @@ const serverSettingsPlugin: JupyterFrontEndPlugin<ServerConnection.ISettings> =
     }
   };
 
-export default [defaultDrivePlugin, serviceManagerPlugin, serverSettingsPlugin];
+export default [
+  contentsManagerPlugin,
+  defaultDrivePlugin,
+  serviceManagerPlugin,
+  serverSettingsPlugin
+];
