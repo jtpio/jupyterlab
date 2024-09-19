@@ -1,10 +1,18 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { ServerConnection } from '.';
+import { Contents, ServerConnection } from '.';
 import { ServiceManager } from './manager';
 
 import { Token } from '@lumino/coreutils';
+
+/**
+ * The default drive token.
+ */
+export const IDefaultDrive = new Token<Contents.IDrive>(
+  '@jupyterlab/services:IDefaultDrive',
+  'The default drive for the contents manager.'
+);
 
 /**
  * The default service manager token.

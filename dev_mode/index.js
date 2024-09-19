@@ -176,12 +176,22 @@ export async function main() {
   }
   {{/each}}
 
+
+  const serviceManagerPlugins = [];
+  // TODO: generalize for all service managre plugins
+  const IDefaultDrive = require('@jupyterlab/services').IDefaultDrive;
+
   // Add the federated extensions.
   const federatedExtensions = await Promise.allSettled(federatedExtensionPromises);
   federatedExtensions.forEach(p => {
     if (p.status === "fulfilled") {
       for (let plugin of activePlugins(p.value)) {
-        register.push(plugin);
+        // TODO: handle more plugin types
+        if (plugin.provides === IDefaultDrive) {
+          serviceManagerPlugins.push(plugin);
+        } else {
+          register.push(plugin);
+        }
       }
     } else {
       console.error(p.reason);
@@ -194,7 +204,6 @@ export async function main() {
   });
 
   // 1. First register the service manager plugins
-  const serviceManagerPlugins = [];
   try {
     let ext = require('@jupyterlab/application-extension/lib/services.js');
     // TODO: use something else?
