@@ -224,7 +224,7 @@ export async function main() {
     availablePlugins: allPlugins
   });
 
-  // 4. Start the application
+  // 4. Start the application, which will activate the other plugins
   lab.start({ ignorePlugins, bubblingKeydown: true });
 
   // Expose global app instance when in dev mode or when toggled explicitly.
