@@ -56,7 +56,7 @@ export async function main() {
      };
   }
 
-  var serviceManagerPluginRegistry = new PluginRegistry();
+  var pluginRegistry = new PluginRegistry();
   var JupyterLab = require('@jupyterlab/application').JupyterLab;
   var disabled = [];
   var deferred = [];
@@ -238,14 +238,12 @@ export async function main() {
   });
 
   // 2. Register the service manager plugins first
-  serviceManagerPluginRegistry.registerPlugins(serviceManagerPlugins);
-  serviceManagerPluginRegistry.activatePlugins('startUp');
+  pluginRegistry.registerPlugins(serviceManagerPlugins);
 
   // 3. Get and resolve the service manager plugin
   const IServiceManager = require('@jupyterlab/services').IServiceManager;
-  const serviceManager = await serviceManagerPluginRegistry.resolveRequiredService(IServiceManager);
+  const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);
 
-  const pluginRegistry = new PluginRegistry();
   const lab = new JupyterLab({
     pluginRegistry,
     serviceManager,
