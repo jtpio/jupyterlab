@@ -56,7 +56,7 @@ export async function main() {
      };
   }
 
-  var pluginRegistry = new PluginRegistry();
+  var serviceManagerPluginRegistry = new PluginRegistry();
   var JupyterLab = require('@jupyterlab/application').JupyterLab;
   var disabled = [];
   var deferred = [];
@@ -189,6 +189,7 @@ export async function main() {
 
   // 1. First register the service manager plugins
   try {
+    // TODO: update if moved to a `@jupyterlab/services-extension` package
     coreServiceManagerExtension = require('@jupyterlab/application-extension/lib/services.js');
     // TODO: use something else?
     coreServiceManagerExtension.__scope__ = '@jupyterlab/services-extension';
@@ -208,8 +209,18 @@ export async function main() {
   federatedExtensions.forEach(p => {
     if (p.status === "fulfilled") {
       for (let plugin of activePlugins(p.value)) {
-        if (allServiceManagerTokens.includes(plugin.provides)) {
-          // if one of the federated extensions provides a service manager token, add it to the service manager plugins
+        // Also check if one of the tokens is specified in a requires or optional field
+        // Even though the prefereed for consuming the ServiceManager services is to acess them
+        // via app.serviceManager.
+        const isServerManagerPlugin = allServiceManagerTokens.some(token => {
+          return (
+               token === plugin.provides
+            || plugin.requires?.includes(token)
+            || plugin.optional?.includes(token)
+          );
+        });
+        if (isServerManagerPlugin) {
+          // if one of the federated plugins provides or consumes a service manager token, add it to the service manager plugins
           serviceManagerPlugins.push(plugin);
         } else {
           // otherwise, add it to the regular plugins
@@ -227,12 +238,14 @@ export async function main() {
   });
 
   // 2. Register the service manager plugins first
-  pluginRegistry.registerPlugins(serviceManagerPlugins);
+  serviceManagerPluginRegistry.registerPlugins(serviceManagerPlugins);
+  serviceManagerPluginRegistry.activatePlugins('startUp');
 
   // 3. Get and resolve the service manager plugin
   const IServiceManager = require('@jupyterlab/services').IServiceManager;
-  const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);
+  const serviceManager = await serviceManagerPluginRegistry.resolveRequiredService(IServiceManager);
 
+  const pluginRegistry = new PluginRegistry();
   const lab = new JupyterLab({
     pluginRegistry,
     serviceManager,
