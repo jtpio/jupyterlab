@@ -60,6 +60,8 @@ import { DisposableDelegate, DisposableSet } from '@lumino/disposable';
 import { DockLayout, DockPanel, Widget } from '@lumino/widgets';
 import * as React from 'react';
 import { topbar } from './topbar';
+import { servicesPlugins } from './services';
+import { ServiceManagerPlugin } from '@jupyterlab/services';
 
 /**
  * Default context menu item rank
@@ -1305,7 +1307,7 @@ const modeSwitchPlugin: JupyterFrontEndPlugin<void> = {
 /**
  * Export the plugins as default.
  */
-const plugins: JupyterFrontEndPlugin<any>[] = [
+const plugins: (JupyterFrontEndPlugin<any> | ServiceManagerPlugin<any>)[] = [
   contextMenuPlugin,
   dirty,
   main,
@@ -1322,7 +1324,9 @@ const plugins: JupyterFrontEndPlugin<any>[] = [
   paths,
   propertyInspector,
   jupyterLogo,
-  topbar
+  topbar,
+  // TODO: move to a new `@jupyterlab/services-extension` package?
+  ...servicesPlugins
 ];
 
 export default plugins;

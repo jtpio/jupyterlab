@@ -183,51 +183,12 @@ export async function main() {
   }
   {{/each}}
 
-
-  let coreServiceManagerExtension;
-  const serviceManagerPlugins = [];
-
-  // 1. First register the service manager plugins
-  try {
-    // TODO: update if moved to a `@jupyterlab/services-extension` package
-    coreServiceManagerExtension = require('@jupyterlab/application-extension/lib/services.js');
-    // TODO: use something else?
-    coreServiceManagerExtension.__scope__ = '@jupyterlab/services-extension';
-    // Get the core service manager plugins that are not disabled
-    for (let plugin of activePlugins(coreServiceManagerExtension)) {
-      serviceManagerPlugins.push(plugin);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  // Get a list of all service manager default tokens to check if a federated extension provides any of them, so it can be swapped
-  const allServiceManagerTokens = getPlugins(coreServiceManagerExtension).map(p => p.provides);
-
   // Add the federated extensions.
   const federatedExtensions = await Promise.allSettled(federatedExtensionPromises);
   federatedExtensions.forEach(p => {
     if (p.status === "fulfilled") {
       for (let plugin of activePlugins(p.value)) {
-        // Also check if one of the tokens is specified in a requires or optional field
-        // Even though the prefereed for consuming the ServiceManager services is to acess them
-        // via app.serviceManager.
-        // TODO: check if this is really necessary, or if pluginRegistry.resolveRequiredService(IServiceManager)
-        // is enough to trigger the set of required plugin activation
-        const isServerManagerPlugin = allServiceManagerTokens.some(token => {
-          return (
-               token === plugin.provides
-            || plugin.requires?.includes(token)
-            || plugin.optional?.includes(token)
-          );
-        });
-        if (isServerManagerPlugin) {
-          // if one of the federated plugins provides or consumes a service manager token, add it to the service manager plugins
-          serviceManagerPlugins.push(plugin);
-        } else {
-          // otherwise, add it to the regular plugins
-          register.push(plugin);
-        }
+        register.push(plugin);
       }
     } else {
       console.error(p.reason);
@@ -239,8 +200,8 @@ export async function main() {
     console.error(reason);
   });
 
-  // 2. Register the service manager plugins first
-  pluginRegistry.registerPlugins(serviceManagerPlugins);
+  // 2. Register the plugins
+  pluginRegistry.registerPlugins(register);
 
   // 3. Get and resolve the service manager plugin
   const IServiceManager = require('@jupyterlab/services').IServiceManager;
@@ -263,10 +224,7 @@ export async function main() {
     availablePlugins: allPlugins
   });
 
-  // 4. Register all regular plugins
-  pluginRegistry.registerPlugins(register);
-
-  // 5. Start the application
+  // 4. Start the application
   lab.start({ ignorePlugins, bubblingKeydown: true });
 
   // Expose global app instance when in dev mode or when toggled explicitly.
