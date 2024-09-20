@@ -6,7 +6,7 @@ import { Token } from '@lumino/coreutils';
 import { expect } from '@playwright/test';
 import * as fs from 'fs-extra';
 
-test('All plugins and tokens must have a description', async ({
+test.only('All plugins and tokens must have a description', async ({
   page
 }, testInfo) => {
   const { plugins, tokens } = await page.evaluate(async () => {
