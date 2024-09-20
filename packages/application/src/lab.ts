@@ -19,10 +19,6 @@ export class JupyterLab extends JupyterFrontEnd<ILabShell> {
    * Construct a new JupyterLab object.
    */
   constructor(options: JupyterLab.IOptions = { shell: new LabShell() }) {
-    // TODO: debug log, remove
-    if (options.serviceManager) {
-      console.log('Using the provided service manager');
-    }
     super({
       ...options,
       shell: options.shell || new LabShell(),

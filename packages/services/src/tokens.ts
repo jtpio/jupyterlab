@@ -16,7 +16,18 @@ import {
 } from '.';
 import { ServiceManager } from './manager';
 
-import { Token } from '@lumino/coreutils';
+import { type IPlugin, Token } from '@lumino/coreutils';
+
+/**
+ * The type for a service manager plugin.
+ *
+ * @typeparam T - The type that the plugin `provides` upon being activated.
+ *
+ * #### Notes
+ * This type of plugin is different than a JupyterFrontEndPlugin,
+ * as the app will still be `null` when its `activate` method is called.
+ */
+export type ServiceManagerPlugin<T> = IPlugin<null, T>;
 
 /**
  * The contents manager token.

@@ -4,11 +4,6 @@
  */
 
 import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
-
-import {
   Contents,
   ContentsManager,
   Drive,
@@ -35,6 +30,7 @@ import {
   NbConvertManager,
   ServerConnection,
   ServiceManager,
+  ServiceManagerPlugin,
   Session,
   SessionManager,
   Setting,
@@ -52,13 +48,13 @@ import {
 /**
  * The default contents manager plugin.
  */
-const contentsManagerPlugin: JupyterFrontEndPlugin<Contents.IManager> = {
+const contentsManagerPlugin: ServiceManagerPlugin<Contents.IManager> = {
   id: '@jupyterlab/application-extension:contents-manager',
   autoStart: true,
   provides: IContentsManager,
   requires: [IDefaultDrive, IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     defaultDrive: Contents.IDrive,
     serverSettings: ServerConnection.ISettings
   ): Contents.IManager => {
@@ -72,13 +68,13 @@ const contentsManagerPlugin: JupyterFrontEndPlugin<Contents.IManager> = {
 /**
  * The default drive plugin.
  */
-const defaultDrivePlugin: JupyterFrontEndPlugin<Contents.IDrive> = {
+const defaultDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
   id: '@jupyterlab/application-extension:default-drive',
   autoStart: true,
   provides: IDefaultDrive,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | null
   ): Contents.IDrive => {
     console.log('Using the default drive plugin');
@@ -89,13 +85,13 @@ const defaultDrivePlugin: JupyterFrontEndPlugin<Contents.IDrive> = {
 /**
  * The event manager plugin.
  */
-const eventManagerPlugin: JupyterFrontEndPlugin<Event.IManager> = {
+const eventManagerPlugin: ServiceManagerPlugin<Event.IManager> = {
   id: '@jupyterlab/application-extension:event-manager',
   autoStart: true,
   provides: IEventManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): Event.IManager => {
     return new EventManager({ serverSettings });
@@ -105,13 +101,13 @@ const eventManagerPlugin: JupyterFrontEndPlugin<Event.IManager> = {
 /**
  * The kernel manager plugin.
  */
-const kernelManagerPlugin: JupyterFrontEndPlugin<Kernel.IManager> = {
+const kernelManagerPlugin: ServiceManagerPlugin<Kernel.IManager> = {
   id: '@jupyterlab/application-extension:kernel-manager',
   autoStart: true,
   provides: IKernelManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): Kernel.IManager => {
     return new KernelManager({ serverSettings });
@@ -121,13 +117,13 @@ const kernelManagerPlugin: JupyterFrontEndPlugin<Kernel.IManager> = {
 /**
  * The kernel spec manager plugin.
  */
-const kernelSpecManagerPlugin: JupyterFrontEndPlugin<KernelSpec.IManager> = {
+const kernelSpecManagerPlugin: ServiceManagerPlugin<KernelSpec.IManager> = {
   id: '@jupyterlab/application-extension:kernel-spec-manager',
   autoStart: true,
   provides: IKernelSpecManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): KernelSpec.IManager => {
     return new KernelSpecManager({ serverSettings });
@@ -137,13 +133,13 @@ const kernelSpecManagerPlugin: JupyterFrontEndPlugin<KernelSpec.IManager> = {
 /**
  * The nbconvert manager plugin.
  */
-const nbConvertManagerPlugin: JupyterFrontEndPlugin<NbConvert.IManager> = {
+const nbConvertManagerPlugin: ServiceManagerPlugin<NbConvert.IManager> = {
   id: '@jupyterlab/application-extension:nbconvert-manager',
   autoStart: true,
   provides: INbConvertManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): NbConvert.IManager => {
     return new NbConvertManager({ serverSettings });
@@ -153,14 +149,14 @@ const nbConvertManagerPlugin: JupyterFrontEndPlugin<NbConvert.IManager> = {
 /**
  * The session manager plugin.
  */
-const sessionManagerPlugin: JupyterFrontEndPlugin<Session.IManager> = {
+const sessionManagerPlugin: ServiceManagerPlugin<Session.IManager> = {
   id: '@jupyterlab/application-extension:session-manager',
   autoStart: true,
   provides: ISessionManager,
   requires: [IKernelManager],
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     kernelManager: Kernel.IManager,
     serverSettings: ServerConnection.ISettings | undefined
   ): Session.IManager => {
@@ -171,13 +167,13 @@ const sessionManagerPlugin: JupyterFrontEndPlugin<Session.IManager> = {
 /**
  * The setting manager plugin.
  */
-const settingManagerPlugin: JupyterFrontEndPlugin<Setting.IManager> = {
+const settingManagerPlugin: ServiceManagerPlugin<Setting.IManager> = {
   id: '@jupyterlab/application-extension:setting-manager',
   autoStart: true,
   provides: ISettingManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): Setting.IManager => {
     return new SettingManager({ serverSettings });
@@ -187,13 +183,13 @@ const settingManagerPlugin: JupyterFrontEndPlugin<Setting.IManager> = {
 /**
  * The terminal manager plugin.
  */
-const terminalManagerPlugin: JupyterFrontEndPlugin<Terminal.IManager> = {
+const terminalManagerPlugin: ServiceManagerPlugin<Terminal.IManager> = {
   id: '@jupyterlab/application-extension:terminal-manager',
   autoStart: true,
   provides: ITerminalManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): Terminal.IManager => {
     return new TerminalManager({ serverSettings });
@@ -203,13 +199,13 @@ const terminalManagerPlugin: JupyterFrontEndPlugin<Terminal.IManager> = {
 /**
  * The user manager plugin.
  */
-const userManagerPlugin: JupyterFrontEndPlugin<User.IManager> = {
+const userManagerPlugin: ServiceManagerPlugin<User.IManager> = {
   id: '@jupyterlab/application-extension:user-manager',
   autoStart: true,
   provides: IUserManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): User.IManager => {
     return new UserManager({ serverSettings });
@@ -219,13 +215,13 @@ const userManagerPlugin: JupyterFrontEndPlugin<User.IManager> = {
 /**
  * The workspace manager plugin.
  */
-const workspaceManagerPlugin: JupyterFrontEndPlugin<Workspace.IManager> = {
+const workspaceManagerPlugin: ServiceManagerPlugin<Workspace.IManager> = {
   id: '@jupyterlab/application-extension:workspace-manager',
   autoStart: true,
   provides: IWorkspaceManager,
   optional: [IServerSettings],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     serverSettings: ServerConnection.ISettings | undefined
   ): Workspace.IManager => {
     return new WorkspaceManager({ serverSettings });
@@ -235,20 +231,19 @@ const workspaceManagerPlugin: JupyterFrontEndPlugin<Workspace.IManager> = {
 /**
  * The default server settings plugin.
  */
-const serverSettingsPlugin: JupyterFrontEndPlugin<ServerConnection.ISettings> =
-  {
-    id: '@jupyterlab/application-extension:server-settings',
-    autoStart: true,
-    provides: IServerSettings,
-    activate: (app: JupyterFrontEnd): ServerConnection.ISettings => {
-      return ServerConnection.makeSettings();
-    }
-  };
+const serverSettingsPlugin: ServiceManagerPlugin<ServerConnection.ISettings> = {
+  id: '@jupyterlab/application-extension:server-settings',
+  autoStart: true,
+  provides: IServerSettings,
+  activate: (_: null): ServerConnection.ISettings => {
+    return ServerConnection.makeSettings();
+  }
+};
 
 /**
  * Instantiate a new service manager.
  */
-const serviceManagerPlugin: JupyterFrontEndPlugin<ServiceManager.IManager> = {
+const serviceManagerPlugin: ServiceManagerPlugin<ServiceManager.IManager> = {
   id: '@jupyterlab/application-extension:service-manager',
   autoStart: true,
   provides: IServiceManager,
@@ -268,7 +263,7 @@ const serviceManagerPlugin: JupyterFrontEndPlugin<ServiceManager.IManager> = {
     IWorkspaceManager
   ],
   activate: (
-    app: JupyterFrontEnd,
+    _: null,
     contents: Contents.IManager | undefined,
     defaultDrive: Contents.IDrive | undefined,
     serverSettings: ServerConnection.ISettings | undefined,
