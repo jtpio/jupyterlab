@@ -212,6 +212,8 @@ export async function main() {
         // Also check if one of the tokens is specified in a requires or optional field
         // Even though the prefereed for consuming the ServiceManager services is to acess them
         // via app.serviceManager.
+        // TODO: check if this is really necessary, or if pluginRegistry.resolveRequiredService(IServiceManager)
+        // is enough to trigger the set of required plugin activation
         const isServerManagerPlugin = allServiceManagerTokens.some(token => {
           return (
                token === plugin.provides
