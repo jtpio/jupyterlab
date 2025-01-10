@@ -4619,7 +4619,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jupyterlab/services-extension@workspace:packages/services-extension"
   dependencies:
+    "@jupyterlab/application": ^4.4.0-alpha.2
+    "@jupyterlab/services": ^7.4.0-alpha.2
     "@jupyterlab/testing": ^4.4.0-alpha.2
+    "@lumino/coreutils": ^2.2.0
     "@types/jest": ^29.2.0
     rimraf: ~5.0.5
     typescript: ~5.1.6

@@ -3,6 +3,12 @@
   "include": ["src/*", "test/*"],
   "references": [
     {
+      "path": "../application"
+    },
+    {
+      "path": "../services"
+    },
+    {
       "path": "."
     },
     {
