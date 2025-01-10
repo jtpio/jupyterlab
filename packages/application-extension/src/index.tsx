@@ -60,7 +60,6 @@ import { DisposableDelegate, DisposableSet } from '@lumino/disposable';
 import { DockLayout, DockPanel, Widget } from '@lumino/widgets';
 import * as React from 'react';
 import { topbar } from './topbar';
-import { servicesPlugins } from './services';
 
 /**
  * Default context menu item rank
@@ -1323,9 +1322,7 @@ export default [
   paths,
   propertyInspector,
   jupyterLogo,
-  topbar,
-  // TODO: move to a new `@jupyterlab/services-extension` package?
-  ...servicesPlugins
+  topbar
 ];
 
 namespace Private {

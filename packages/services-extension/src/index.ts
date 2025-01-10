@@ -1,6 +1,10 @@
-/*
- * Copyright (c) Jupyter Development Team.
- * Distributed under the terms of the Modified BSD License.
+/* -----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module services-extension
  */
 
 import { ConnectionStatus, IConnectionStatus } from '@jupyterlab/application';
@@ -45,15 +49,13 @@ import {
   WorkspaceManager
 } from '@jupyterlab/services';
 
-// TODO: move to a new `@jupyterlab/services-extension` package?
-
 import type { IPlugin } from '@lumino/coreutils';
 
 /**
  * The default JupyterLab application status provider.
  */
 export const connectionStatus: IPlugin<null, IConnectionStatus> = {
-  id: '@jupyterlab/application-extension:connection-status',
+  id: '@jupyterlab/services-extension:connection-status',
   autoStart: true,
   provides: IConnectionStatus,
   description: 'Provides the application connection status.',
@@ -66,7 +68,7 @@ export const connectionStatus: IPlugin<null, IConnectionStatus> = {
  * The default contents manager plugin.
  */
 const contentsManagerPlugin: ServiceManagerPlugin<Contents.IManager> = {
-  id: '@jupyterlab/application-extension:contents-manager',
+  id: '@jupyterlab/services-extension:contents-manager',
   description: 'The default contents manager plugin.',
   autoStart: true,
   provides: IContentsManager,
@@ -87,7 +89,7 @@ const contentsManagerPlugin: ServiceManagerPlugin<Contents.IManager> = {
  * The default drive plugin.
  */
 const defaultDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
-  id: '@jupyterlab/application-extension:default-drive',
+  id: '@jupyterlab/services-extension:default-drive',
   description: 'The default drive for the contents manager.',
   autoStart: true,
   provides: IDefaultDrive,
@@ -105,7 +107,7 @@ const defaultDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
  * The event manager plugin.
  */
 const eventManagerPlugin: ServiceManagerPlugin<Event.IManager> = {
-  id: '@jupyterlab/application-extension:event-manager',
+  id: '@jupyterlab/services-extension:event-manager',
   description: 'The event manager plugin.',
   autoStart: true,
   provides: IEventManager,
@@ -122,7 +124,7 @@ const eventManagerPlugin: ServiceManagerPlugin<Event.IManager> = {
  * The kernel manager plugin.
  */
 const kernelManagerPlugin: ServiceManagerPlugin<Kernel.IManager> = {
-  id: '@jupyterlab/application-extension:kernel-manager',
+  id: '@jupyterlab/services-extension:kernel-manager',
   description: 'The kernel manager plugin.',
   autoStart: true,
   provides: IKernelManager,
@@ -139,7 +141,7 @@ const kernelManagerPlugin: ServiceManagerPlugin<Kernel.IManager> = {
  * The kernel spec manager plugin.
  */
 const kernelSpecManagerPlugin: ServiceManagerPlugin<KernelSpec.IManager> = {
-  id: '@jupyterlab/application-extension:kernel-spec-manager',
+  id: '@jupyterlab/services-extension:kernel-spec-manager',
   description: 'The kernel spec manager plugin.',
   autoStart: true,
   provides: IKernelSpecManager,
@@ -156,7 +158,7 @@ const kernelSpecManagerPlugin: ServiceManagerPlugin<KernelSpec.IManager> = {
  * The nbconvert manager plugin.
  */
 const nbConvertManagerPlugin: ServiceManagerPlugin<NbConvert.IManager> = {
-  id: '@jupyterlab/application-extension:nbconvert-manager',
+  id: '@jupyterlab/services-extension:nbconvert-manager',
   description: 'The nbconvert manager plugin.',
   autoStart: true,
   provides: INbConvertManager,
@@ -173,7 +175,7 @@ const nbConvertManagerPlugin: ServiceManagerPlugin<NbConvert.IManager> = {
  * The session manager plugin.
  */
 const sessionManagerPlugin: ServiceManagerPlugin<Session.IManager> = {
-  id: '@jupyterlab/application-extension:session-manager',
+  id: '@jupyterlab/services-extension:session-manager',
   description: 'The session manager plugin.',
   autoStart: true,
   provides: ISessionManager,
@@ -192,7 +194,7 @@ const sessionManagerPlugin: ServiceManagerPlugin<Session.IManager> = {
  * The setting manager plugin.
  */
 const settingManagerPlugin: ServiceManagerPlugin<Setting.IManager> = {
-  id: '@jupyterlab/application-extension:setting-manager',
+  id: '@jupyterlab/services-extension:setting-manager',
   description: 'The setting manager plugin.',
   autoStart: true,
   provides: ISettingManager,
@@ -209,7 +211,7 @@ const settingManagerPlugin: ServiceManagerPlugin<Setting.IManager> = {
  * The terminal manager plugin.
  */
 const terminalManagerPlugin: ServiceManagerPlugin<Terminal.IManager> = {
-  id: '@jupyterlab/application-extension:terminal-manager',
+  id: '@jupyterlab/services-extension:terminal-manager',
   description: 'The terminal manager plugin.',
   autoStart: true,
   provides: ITerminalManager,
@@ -226,7 +228,7 @@ const terminalManagerPlugin: ServiceManagerPlugin<Terminal.IManager> = {
  * The user manager plugin.
  */
 const userManagerPlugin: ServiceManagerPlugin<User.IManager> = {
-  id: '@jupyterlab/application-extension:user-manager',
+  id: '@jupyterlab/services-extension:user-manager',
   description: 'The user manager plugin.',
   autoStart: true,
   provides: IUserManager,
@@ -243,7 +245,7 @@ const userManagerPlugin: ServiceManagerPlugin<User.IManager> = {
  * The workspace manager plugin.
  */
 const workspaceManagerPlugin: ServiceManagerPlugin<Workspace.IManager> = {
-  id: '@jupyterlab/application-extension:workspace-manager',
+  id: '@jupyterlab/services-extension:workspace-manager',
   description: 'The workspace manager plugin.',
   autoStart: true,
   provides: IWorkspaceManager,
@@ -260,7 +262,7 @@ const workspaceManagerPlugin: ServiceManagerPlugin<Workspace.IManager> = {
  * The default server settings plugin.
  */
 const serverSettingsPlugin: ServiceManagerPlugin<ServerConnection.ISettings> = {
-  id: '@jupyterlab/application-extension:server-settings',
+  id: '@jupyterlab/services-extension:server-settings',
   description: 'The default server settings plugin.',
   autoStart: true,
   provides: IServerSettings,
@@ -273,7 +275,7 @@ const serverSettingsPlugin: ServiceManagerPlugin<ServerConnection.ISettings> = {
  * Instantiate a new service manager.
  */
 const serviceManagerPlugin: ServiceManagerPlugin<ServiceManager.IManager> = {
-  id: '@jupyterlab/application-extension:service-manager',
+  id: '@jupyterlab/services-extension:service-manager',
   description: 'The default service manager plugin.',
   autoStart: true,
   provides: IServiceManager,
