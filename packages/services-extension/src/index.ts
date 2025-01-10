@@ -331,7 +331,7 @@ const serviceManagerPlugin: ServiceManagerPlugin<ServiceManager.IManager> = {
   }
 };
 
-export const servicesPlugins = [
+export default [
   contentsManagerPlugin,
   defaultDrivePlugin,
   eventManagerPlugin,
