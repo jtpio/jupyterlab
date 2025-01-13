@@ -1305,7 +1305,7 @@ const modeSwitchPlugin: JupyterFrontEndPlugin<void> = {
 /**
  * Export the plugins as default.
  */
-export default [
+const plugins: JupyterFrontEndPlugin<any>[] = [
   contextMenuPlugin,
   dirty,
   main,
@@ -1324,6 +1324,8 @@ export default [
   jupyterLogo,
   topbar
 ];
+
+export default plugins;
 
 namespace Private {
   async function displayInformation(trans: TranslationBundle): Promise<void> {
