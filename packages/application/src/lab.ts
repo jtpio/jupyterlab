@@ -4,14 +4,16 @@
 import { PageConfig } from '@jupyterlab/coreutils';
 import { Base64ModelFactory } from '@jupyterlab/docregistry';
 import { IRenderMime } from '@jupyterlab/rendermime-interfaces';
-import { ServiceManager } from '@jupyterlab/services';
+import {
+  ConnectionStatus,
+  IConnectionStatus,
+  ServiceManager
+} from '@jupyterlab/services';
 import { PromiseDelegate, Token } from '@lumino/coreutils';
-import { ConnectionStatus } from './connectionstatus';
 import { JupyterFrontEnd, JupyterFrontEndPlugin } from './frontend';
 import { createRendermimePlugins } from './mimerenderers';
 import { ILabShell, LabShell } from './shell';
 import { LabStatus } from './status';
-import { IConnectionStatus } from './tokens';
 
 /**
  * JupyterLab is the main application class. It is instantiated once and shared.

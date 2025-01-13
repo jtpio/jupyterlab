@@ -7,14 +7,14 @@
  * @module services-extension
  */
 
-import { ConnectionStatus, IConnectionStatus } from '@jupyterlab/application';
-
 import {
+  ConnectionStatus,
   Contents,
   ContentsManager,
   Drive,
   Event,
   EventManager,
+  IConnectionStatus,
   IContentsManager,
   IDefaultDrive,
   IEventManager,
@@ -52,13 +52,13 @@ import {
 import type { IPlugin } from '@lumino/coreutils';
 
 /**
- * The default JupyterLab application status provider.
+ * The default connection status provider.
  */
 export const connectionStatus: IPlugin<null, IConnectionStatus> = {
   id: '@jupyterlab/services-extension:connection-status',
   autoStart: true,
   provides: IConnectionStatus,
-  description: 'Provides the application connection status.',
+  description: 'Provides the default connection status.',
   activate: () => {
     return new ConnectionStatus();
   }

@@ -7,6 +7,7 @@
 
 export * from './basemanager';
 export * from './config';
+export * from './connectionstatus';
 export * from './contents';
 export * from './event';
 export * from './kernel';

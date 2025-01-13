@@ -204,7 +204,7 @@ export async function main() {
   pluginRegistry.registerPlugins(register);
 
   // 3. Get and resolve the service manager and connection status plugins
-  const IConnectionStatus = require('@jupyterlab/application/lib/tokens.js').IConnectionStatus;
+  const IConnectionStatus = require('@jupyterlab/services').IConnectionStatus;
   const IServiceManager = require('@jupyterlab/services').IServiceManager;
   const connectionStatus = await pluginRegistry.resolveOptionalService(IConnectionStatus);
   const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);

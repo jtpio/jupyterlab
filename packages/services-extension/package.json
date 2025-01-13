@@ -17,7 +17,6 @@
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "style": "style/index.css",
   "directories": {
     "lib": "lib/"
   },
@@ -39,7 +38,6 @@
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyterlab/application": "^4.4.0-alpha.2",
     "@jupyterlab/services": "^7.4.0-alpha.2",
     "@lumino/coreutils": "^2.2.0"
   },
@@ -54,6 +52,5 @@
   },
   "jupyterlab": {
     "extension": true
-  },
-  "styleModule": "style/index.js"
+  }
 }

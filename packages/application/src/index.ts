@@ -6,7 +6,6 @@
  */
 
 export { ConnectionLost } from './connectionlost';
-export * from './connectionstatus';
 export {
   JupyterFrontEnd,
   JupyterFrontEndContextMenu,
