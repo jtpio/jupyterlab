@@ -218,17 +218,17 @@ Service Manager Plugins
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   Added in: JupyterLab 4.3.0
+   Added in: JupyterLab 4.4.0
 
 .. warning::
    This is an advanced topic. If you are new to JupyterLab extensions, you can skip this section.
 
 The Service Manager is a core component of a JupyterLab application and the interface to the Jupyter Server REST API.
-Before JupyterLab 4.3.0, the Service Manager had to be created as a singleton object and passed when creating a JupyterLab application object.
+Before JupyterLab 4.4.0, the Service Manager had to be created as a singleton object and passed when creating a JupyterLab application object.
 This was not convenient if some extensions needed to change the behavior of some of the core services provided by the Service Manager,
 as they would have to build a new JupyterLab application from scratch.
 
-Starting from JupyterLab 4.3.0, the Service Manager is itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
+Starting from JupyterLab 4.4.0, the Service Manager is itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
 Its underlying services (such as the kernel manager and the contents manager) are also now available as plugins,
 They too can be provided by third-party extensions via the following tokens:
 
