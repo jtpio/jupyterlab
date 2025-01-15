@@ -4244,6 +4244,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jupyterlab/mock-service-manager-extension@workspace:jupyterlab/tests/mock_packages/service-manager-extension":
+  version: 0.0.0-use.local
+  resolution: "@jupyterlab/mock-service-manager-extension@workspace:jupyterlab/tests/mock_packages/service-manager-extension"
+  dependencies:
+    "@jupyterlab/builder": ^4.4.0-alpha.2
+    "@jupyterlab/services": ^7.4.0-alpha.2
+  languageName: unknown
+  linkType: soft
+
 "@jupyterlab/mock-token@^4.4.0-alpha.2, @jupyterlab/mock-token@workspace:jupyterlab/tests/mock_packages/interop/token":
   version: 0.0.0-use.local
   resolution: "@jupyterlab/mock-token@workspace:jupyterlab/tests/mock_packages/interop/token"

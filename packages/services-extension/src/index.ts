@@ -98,7 +98,6 @@ const defaultDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
     _: null,
     serverSettings: ServerConnection.ISettings | null
   ): Contents.IDrive => {
-    console.log('Using the default drive plugin');
     return new Drive({ serverSettings: serverSettings ?? undefined });
   }
 };
