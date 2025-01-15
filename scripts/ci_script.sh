@@ -256,6 +256,7 @@ if [[ $GROUP == usage ]]; then
     jupyter labextension develop service-manager-extension --overwrite --debug
     jupyter labextension list 1>labextensions 2>&1
     cat labextensions | grep "@jupyterlab/mock-service-manager-extension.*enabled.*OK"
+    python -m jupyterlab.browser_check
 
     popd
 
