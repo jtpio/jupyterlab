@@ -217,9 +217,6 @@ See the `TypeScript extension template <https://github.com/jupyterlab/extension-
 Service Manager Plugins
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note::
-   Added in: JupyterLab 4.4.0
-
 .. warning::
    This is an advanced topic. If you are new to JupyterLab extensions, you can skip this section.
 
@@ -228,9 +225,11 @@ Before JupyterLab 4.4.0, the Service Manager had to be created as a singleton ob
 This was not convenient if some extensions needed to change the behavior of some of the core services provided by the Service Manager,
 as they would have to build a new JupyterLab application from scratch.
 
-Starting from JupyterLab 4.4.0, the Service Manager is itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
-Its underlying services (such as the kernel manager and the contents manager) are also now available as plugins,
-They too can be provided by third-party extensions via the following tokens:
+.. versionadded:: 4.4
+  Starting from JupyterLab 4.4.0, the Service Manager is itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
+  Its underlying services (such as the kernel manager and the contents manager) are also now available as plugins.
+
+The Service Manager plugins can be provided by third-party extensions via the following tokens:
 
 * ``IConnectionStatus``: The connection status service.
 * ``IContentsManager``: The contents manager service, responsible for managing files and directories.
