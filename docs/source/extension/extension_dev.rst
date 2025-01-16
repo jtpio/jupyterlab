@@ -226,7 +226,7 @@ This was not convenient if some extensions needed to change the behavior of some
 as they would have to build a new JupyterLab application from scratch.
 
 .. versionadded:: 4.4
-  Starting from JupyterLab 4.4.0, the Service Manager is itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
+  The Service Manager is now itself a plugin which can be provided by a third-party extension using the ``IServiceManager`` token.
   Its underlying services (such as the kernel manager and the contents manager) are also now available as plugins.
 
 The Service Manager plugins can be provided by third-party extensions via the following tokens:
