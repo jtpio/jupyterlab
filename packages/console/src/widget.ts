@@ -25,7 +25,7 @@ import { JSONObject, MimeData } from '@lumino/coreutils';
 import { Drag } from '@lumino/dragdrop';
 import { Message } from '@lumino/messaging';
 import { ISignal, Signal } from '@lumino/signaling';
-import { Panel, PanelLayout, SplitPanel, Widget } from '@lumino/widgets';
+import { Panel, PanelLayout, Widget } from '@lumino/widgets';
 import { runCell } from './cellexecutor';
 import { ConsoleHistory, IConsoleHistory } from './history';
 import type { IConsoleCellExecutor } from './tokens';
@@ -119,8 +119,9 @@ export class CodeConsole extends Widget {
     this._cells = new ObservableList<Cell>();
     this._content = new Panel();
     this._input = new Panel();
-    this._splitPanel = new SplitPanel({ spacing: 0 });
-    this._splitPanel.addClass('jp-CodeConsole-split');
+
+    layout.addWidget(this._content);
+    layout.addWidget(this._input);
 
     this.contentFactory = options.contentFactory;
     this.modelFactory = options.modelFactory ?? CodeConsole.defaultModelFactory;
@@ -131,8 +132,6 @@ export class CodeConsole extends Widget {
     // Add top-level CSS classes.
     this._content.addClass(CONTENT_CLASS);
     this._input.addClass(INPUT_CLASS);
-
-    layout.addWidget(this._splitPanel);
 
     // initialize the console with defaults
     this.setConfig({
@@ -601,9 +600,6 @@ export class CodeConsole extends Widget {
       case 'mouseup':
         this._evtMouseUp(event as MouseEvent);
         break;
-      case 'resize':
-        this._splitPanel.fit();
-        break;
       case 'focusin':
         this._evtFocusIn(event as MouseEvent);
         break;
@@ -945,32 +941,43 @@ export class CodeConsole extends Widget {
   private _updateLayout(): void {
     const { promptCellPosition = 'bottom' } = this._config;
 
-    this._splitPanel.orientation = ['left', 'right'].includes(
-      promptCellPosition
-    )
-      ? 'horizontal'
-      : 'vertical';
+    this._input.node.style.borderLeft = 'none';
+    this._input.node.style.borderTop = 'none';
+    this._input.node.style.borderRight = 'none';
+    this._input.node.style.borderBottom = 'none';
+    const borderStyle =
+      'var(--jp-border-width) solid var(--jp-toolbar-border-color)';
 
-    // Insert the content and input panes into the widget.
-    SplitPanel.setStretch(this._content, 1);
-    SplitPanel.setStretch(this._input, 1);
-
-    if (promptCellPosition === 'bottom' || promptCellPosition === 'right') {
-      this._splitPanel.insertWidget(0, this._content);
-      this._splitPanel.insertWidget(1, this._input);
-    } else {
-      this._splitPanel.insertWidget(0, this._input);
-      this._splitPanel.insertWidget(1, this._content);
+    switch (promptCellPosition) {
+      case 'top':
+        this.node.style.flexDirection = 'column-reverse';
+        this._input.node.style.flex = '0 0 auto';
+        this._input.node.style.maxHeight = '80%';
+        this._input.node.style.borderBottom = borderStyle;
+        this._content.node.style.flex = '1 1 auto';
+        break;
+      case 'bottom':
+        this.node.style.flexDirection = 'column';
+        this._input.node.style.flex = '0 0 auto';
+        this._input.node.style.maxHeight = '80%';
+        this._input.node.style.borderTop = borderStyle;
+        this._content.node.style.flex = '1 1 auto';
+        break;
+      case 'left':
+        this.node.style.flexDirection = 'row-reverse';
+        this._input.node.style.flex = 'auto';
+        this._input.node.style.maxHeight = '100%';
+        this._input.node.style.borderRight = borderStyle;
+        this._content.node.style.flex = 'auto';
+        break;
+      case 'right':
+        this.node.style.flexDirection = 'row';
+        this._input.node.style.flex = 'auto';
+        this._input.node.style.borderLeft = borderStyle;
+        this._input.node.style.maxHeight = '100%';
+        this._content.node.style.flex = 'auto';
+        break;
     }
-
-    // Default relative sizes
-    let sizes = [1, 1];
-    if (promptCellPosition === 'top') {
-      sizes = [1, 100];
-    } else if (promptCellPosition === 'bottom') {
-      sizes = [100, 1];
-    }
-    this._splitPanel.setRelativeSizes(sizes);
   }
 
   private _banner: RawCell | null = null;
@@ -994,7 +1001,6 @@ export class CodeConsole extends Widget {
   private _drag: Drag | null = null;
   private _focusedCell: Cell | null = null;
   private _translator: ITranslator;
-  private _splitPanel: SplitPanel;
 }
 
 /**
