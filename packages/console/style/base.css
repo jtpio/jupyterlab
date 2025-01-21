@@ -5,6 +5,8 @@
 
 .jp-ConsolePanel {
   display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   margin-top: -1px;
   min-width: 240px;
   min-height: 120px;
@@ -14,6 +16,7 @@
   height: 100%;
   padding: 0;
   display: flex;
+  flex-direction: column;
 }
 
 .jp-CodeConsole .jp-Cell {
@@ -25,11 +28,13 @@
 |----------------------------------------------------------------------------*/
 
 .jp-CodeConsole-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
   background: var(--jp-layout-color0);
   overflow: auto;
-  padding: 0 var(--jp-console-padding);
-  min-width: calc(10 * var(--jp-ui-font-size1));
-  min-height: calc(5 * var(--jp-ui-font-size1));
+  padding: var(--jp-console-padding);
 }
 
 .jp-CodeConsole-content .jp-Cell:not(.jp-mod-active) .jp-InputPrompt {
@@ -69,20 +74,27 @@
 |----------------------------------------------------------------------------*/
 
 .jp-CodeConsole-input {
+  max-height: 80%;
+  display: flex;
+  flex: 0 0 auto;
+  width: 100%;
   overflow: auto;
+  border-top: var(--jp-border-width) solid var(--jp-toolbar-border-color);
   padding: var(--jp-cell-padding) var(--jp-console-padding);
 
   /* This matches the box shadow on the notebook toolbar, eventually we should create
    * CSS variables for this */
   box-shadow: 0 0.4px 6px 0 rgba(0, 0, 0, 0.1);
-  background: var(--jp-layout-color0);
-  min-width: calc(10 * var(--jp-ui-font-size1));
-  min-height: calc(4 * var(--jp-ui-font-size1));
+  background: var(--jp-layout-color1);
 }
 
 .jp-CodeConsole-input .jp-CodeConsole-prompt .jp-InputArea {
   height: 100%;
   min-height: 100%;
+}
+
+.jp-CodeConsole-promptCell {
+  width: 100%;
 }
 
 .jp-CodeConsole-promptCell .jp-InputArea-editor.jp-mod-focused {
@@ -103,29 +115,4 @@
 .jp-mod-presentationMode .jp-CodeConsole .jp-Cell .jp-InputPrompt,
 .jp-mod-presentationMode .jp-CodeConsole .jp-Cell .jp-OutputPrompt {
   flex: 0 0 110px;
-}
-
-/*-----------------------------------------------------------------------------
-| Split Panel Container
-|----------------------------------------------------------------------------*/
-.jp-CodeConsole-split {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.jp-CodeConsole-split.lm-SplitPanel .lm-SplitPanel-handle::after {
-  background-color: var(--jp-border-color2);
-  min-height: var(--jp-border-width);
-  min-width: var(--jp-border-width);
-}
-
-/*-----------------------------------------------------------------------------
-| Mobile
-|----------------------------------------------------------------------------*/
-@media only screen and (width <= 760px) {
-  .jp-CodeConsole-input {
-    min-height: calc(6 * var(--jp-ui-font-size1));
-  }
 }
