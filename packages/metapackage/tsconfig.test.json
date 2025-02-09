@@ -18,6 +18,9 @@
       "path": "../attachments"
     },
     {
+      "path": "../audio-extension"
+    },
+    {
       "path": "../cell-toolbar"
     },
     {

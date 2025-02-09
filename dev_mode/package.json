@@ -28,6 +28,7 @@
     "@jupyterlab/apputils": "~4.5.0-alpha.3",
     "@jupyterlab/apputils-extension": "~4.4.0-alpha.3",
     "@jupyterlab/attachments": "~4.4.0-alpha.3",
+    "@jupyterlab/audio-extension": "~4.4.0-alpha.3",
     "@jupyterlab/cell-toolbar": "~4.4.0-alpha.3",
     "@jupyterlab/cell-toolbar-extension": "~4.4.0-alpha.3",
     "@jupyterlab/cells": "~4.4.0-alpha.3",
@@ -148,6 +149,7 @@
     "@jupyterlab/application": "~4.4.0-alpha.3",
     "@jupyterlab/application-extension": "~4.4.0-alpha.3",
     "@jupyterlab/apputils-extension": "~4.4.0-alpha.3",
+    "@jupyterlab/audio-extension": "~4.4.0-alpha.3",
     "@jupyterlab/cell-toolbar-extension": "~4.4.0-alpha.3",
     "@jupyterlab/celltags-extension": "~4.4.0-alpha.3",
     "@jupyterlab/codemirror-extension": "~4.4.0-alpha.3",
@@ -274,6 +276,7 @@
       "@jupyterlab/workspaces-extension": ""
     },
     "mimeExtensions": {
+      "@jupyterlab/audio-extension": "",
       "@jupyterlab/javascript-extension": "",
       "@jupyterlab/json-extension": "",
       "@jupyterlab/mermaid-extension": "lib/mime.js",
@@ -357,6 +360,7 @@
       "@jupyterlab/apputils": "../packages/apputils",
       "@jupyterlab/apputils-extension": "../packages/apputils-extension",
       "@jupyterlab/attachments": "../packages/attachments",
+      "@jupyterlab/audio-extension": "../packages/audio-extension",
       "@jupyterlab/cell-toolbar": "../packages/cell-toolbar",
       "@jupyterlab/cell-toolbar-extension": "../packages/cell-toolbar-extension",
       "@jupyterlab/cells": "../packages/cells",
