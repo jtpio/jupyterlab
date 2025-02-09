@@ -288,6 +288,9 @@
       "path": "../vega5-extension"
     },
     {
+      "path": "../video-extension"
+    },
+    {
       "path": "../workspaces"
     },
     {

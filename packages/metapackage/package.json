@@ -134,6 +134,7 @@
     "@jupyterlab/ui-components": "^4.4.0-alpha.3",
     "@jupyterlab/ui-components-extension": "^4.4.0-alpha.3",
     "@jupyterlab/vega5-extension": "^4.4.0-alpha.3",
+    "@jupyterlab/video-extension": "^4.4.0-alpha.3",
     "@jupyterlab/workspaces": "^4.4.0-alpha.3",
     "@jupyterlab/workspaces-extension": "^4.4.0-alpha.3"
   },

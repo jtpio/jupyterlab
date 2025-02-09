@@ -2263,6 +2263,7 @@ __metadata:
     "@jupyterlab/translation-extension": ~4.4.0-alpha.3
     "@jupyterlab/ui-components-extension": ~4.4.0-alpha.3
     "@jupyterlab/vega5-extension": ~4.4.0-alpha.3
+    "@jupyterlab/video-extension": ~4.4.0-alpha.3
     "@jupyterlab/workspaces-extension": ~4.4.0-alpha.3
     chokidar: ^3.4.0
     css-loader: ^6.7.1
@@ -4222,6 +4223,7 @@ __metadata:
     "@jupyterlab/ui-components": ^4.4.0-alpha.3
     "@jupyterlab/ui-components-extension": ^4.4.0-alpha.3
     "@jupyterlab/vega5-extension": ^4.4.0-alpha.3
+    "@jupyterlab/video-extension": ^4.4.0-alpha.3
     "@jupyterlab/workspaces": ^4.4.0-alpha.3
     "@jupyterlab/workspaces-extension": ^4.4.0-alpha.3
     "@types/jest": ^29.2.0
@@ -5126,6 +5128,22 @@ __metadata:
     vega: ^5.20.0
     vega-embed: ^6.2.1
     vega-lite: ^5.6.1-next.1
+  languageName: unknown
+  linkType: soft
+
+"@jupyterlab/video-extension@^4.4.0-alpha.3, @jupyterlab/video-extension@workspace:packages/video-extension, @jupyterlab/video-extension@~4.4.0-alpha.3":
+  version: 0.0.0-use.local
+  resolution: "@jupyterlab/video-extension@workspace:packages/video-extension"
+  dependencies:
+    "@jupyterlab/rendermime-interfaces": ^3.12.0-alpha.3
+    "@jupyterlab/testutils": ^4.4.0-alpha.3
+    "@lumino/coreutils": ^2.2.0
+    "@lumino/widgets": ^2.5.0
+    "@types/jest": ^29.2.0
+    "@types/webpack-env": ^1.18.0
+    jest: ^29.2.0
+    rimraf: ~5.0.5
+    typescript: ~5.4.5
   languageName: unknown
   linkType: soft
 
