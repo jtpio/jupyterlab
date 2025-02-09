@@ -124,6 +124,7 @@ import userSvgstr from '../../style/icons/sidebar/user.svg';
 import usersSvgstr from '../../style/icons/sidebar/users.svg';
 import variableSvgstr from '../../style/icons/debugger/variable.svg';
 import vegaSvgstr from '../../style/icons/filetype/vega.svg';
+import videoSvgstr from '../../style/icons/filetype/video.svg';
 import viewBreakpointSvgstr from '../../style/icons/debugger/view-breakpoint.svg';
 import wordSvgstr from '../../style/icons/search/word.svg';
 import yamlSvgstr from '../../style/icons/filetype/yaml.svg';
@@ -245,6 +246,7 @@ export const userIcon = new LabIcon({ name: 'ui-components:user', svgstr: userSv
 export const usersIcon = new LabIcon({ name: 'ui-components:users', svgstr: usersSvgstr });
 export const variableIcon = new LabIcon({ name: 'ui-components:variable', svgstr: variableSvgstr });
 export const vegaIcon = new LabIcon({ name: 'ui-components:vega', svgstr: vegaSvgstr });
+export const videoIcon = new LabIcon({ name: 'ui-components:video', svgstr: videoSvgstr });
 export const viewBreakpointIcon = new LabIcon({ name: 'ui-components:view-breakpoint', svgstr: viewBreakpointSvgstr });
 export const wordIcon = new LabIcon({ name: 'ui-components:word', svgstr: wordSvgstr });
 export const yamlIcon = new LabIcon({ name: 'ui-components:yaml', svgstr: yamlSvgstr });

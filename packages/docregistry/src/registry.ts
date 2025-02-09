@@ -26,6 +26,7 @@ import {
   rKernelIcon,
   spreadsheetIcon,
   Toolbar,
+  videoIcon,
   yamlIcon
 } from '@jupyterlab/ui-components';
 import { ArrayExt, find } from '@lumino/algorithm';
@@ -1531,6 +1532,72 @@ export namespace DocumentRegistry {
         extensions: ['.webp'],
         icon: imageIcon,
         fileFormat: 'base64'
+      },
+      {
+        name: 'aac',
+        displayName: trans.__('Audio'),
+        extensions: ['.aac'],
+        mimeTypes: ['audio/aac'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'midi',
+        displayName: trans.__('Audio'),
+        extensions: ['.midi', '.mid'],
+        mimeTypes: ['audio/midi', 'audio/x-midi'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'mp3',
+        displayName: trans.__('Audio'),
+        extensions: ['.mp3'],
+        mimeTypes: ['audio/mpeg'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'wav',
+        displayName: trans.__('Audio'),
+        extensions: ['.wav'],
+        mimeTypes: ['audio/wav', 'audio/x-wav'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'ogg',
+        displayName: trans.__('Audio'),
+        extensions: ['.ogg'],
+        mimeTypes: ['audio/ogg'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'm4a',
+        displayName: trans.__('Audio'),
+        extensions: ['.m4a'],
+        mimeTypes: ['audio/mp4'],
+        fileFormat: 'base64'
+      },
+      {
+        name: 'mp4',
+        displayName: trans.__('Video'),
+        extensions: ['.mp4'],
+        mimeTypes: ['video/mp4'],
+        fileFormat: 'base64',
+        icon: videoIcon
+      },
+      {
+        name: 'mpeg',
+        displayName: trans.__('Video'),
+        extensions: ['.mpeg'],
+        mimeTypes: ['video/mpeg'],
+        fileFormat: 'base64',
+        icon: videoIcon
+      },
+      {
+        name: 'webm',
+        displayName: trans.__('Video'),
+        extensions: ['.webm'],
+        mimeTypes: ['video/webm'],
+        fileFormat: 'base64',
+        icon: videoIcon
       }
     ];
   }

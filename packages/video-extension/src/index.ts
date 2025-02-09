@@ -67,21 +67,12 @@ const extension: IRenderMime.IExtension = {
   rendererFactory,
   rank: 0,
   dataType: 'string',
-  fileTypes: [
-    {
-      name: 'video',
-      fileFormat: 'base64',
-      mimeTypes: VIDEO_MIME_TYPES,
-      extensions: ['.mp4', '.webm', '.ogv']
-    }
-    // TODO: icon
-  ],
   documentWidgetFactoryOptions: {
     name: 'Video',
-    primaryFileType: 'video',
     modelName: 'base64',
-    fileTypes: ['video'],
-    defaultFor: ['video']
+    primaryFileType: 'mp4',
+    fileTypes: ['mp4', 'webm'],
+    defaultFor: ['mp4', 'webm']
   }
 };
 

@@ -128,6 +128,7 @@
   --jp-icon-users: url('icons/sidebar/users.svg');
   --jp-icon-variable: url('icons/debugger/variable.svg');
   --jp-icon-vega: url('icons/filetype/vega.svg');
+  --jp-icon-video: url('icons/filetype/video.svg');
   --jp-icon-view-breakpoint: url('icons/debugger/view-breakpoint.svg');
   --jp-icon-word: url('icons/search/word.svg');
   --jp-icon-yaml: url('icons/filetype/yaml.svg');
@@ -597,6 +598,10 @@
 
 .jp-VegaIcon {
   background-image: var(--jp-icon-vega);
+}
+
+.jp-VideoIcon {
+  background-image: var(--jp-icon-video);
 }
 
 .jp-ViewBreakpointIcon {
