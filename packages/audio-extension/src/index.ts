@@ -19,10 +19,11 @@ const AUDIO_CLASS = 'jp-RenderedAudio';
  * The MIME types for audio.
  */
 export const AUDIO_MIME_TYPES = [
-  'audio/mp3',
+  'audio/mpeg',
   'audio/wav',
   'audio/ogg',
   'audio/m4a'
+  // TODO: add more mime types
 ];
 
 /**
@@ -72,21 +73,12 @@ const extension: IRenderMime.IExtension = {
   rendererFactory,
   rank: 0,
   dataType: 'string',
-  fileTypes: [
-    {
-      name: 'audio',
-      fileFormat: 'base64',
-      mimeTypes: AUDIO_MIME_TYPES,
-      extensions: ['.mp3', '.wav', '.ogg', '.m4a']
-    }
-    // TODO: icon
-  ],
   documentWidgetFactoryOptions: {
     name: 'Audio',
-    primaryFileType: 'audio',
+    primaryFileType: 'mp3',
     modelName: 'base64',
-    fileTypes: ['audio'],
-    defaultFor: ['audio']
+    fileTypes: ['aac', 'm4a', 'midi', 'mp3', 'ogg', 'wav'],
+    defaultFor: ['aac', 'm4a', 'midi', 'mp3', 'ogg', 'wav']
   }
 };
 
