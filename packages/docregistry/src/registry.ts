@@ -13,6 +13,7 @@ import { Contents, Kernel } from '@jupyterlab/services';
 import { ISharedDocument, ISharedFile } from '@jupyter/ydoc';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import {
+  audioIcon,
   fileIcon,
   folderIcon,
   imageIcon,
@@ -1538,6 +1539,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.aac'],
         mimeTypes: ['audio/aac'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
@@ -1545,6 +1547,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.midi', '.mid'],
         mimeTypes: ['audio/midi', 'audio/x-midi'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
@@ -1552,6 +1555,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.mp3'],
         mimeTypes: ['audio/mpeg'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
@@ -1559,6 +1563,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.wav'],
         mimeTypes: ['audio/wav', 'audio/x-wav'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
@@ -1566,6 +1571,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.ogg'],
         mimeTypes: ['audio/ogg'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
@@ -1573,6 +1579,7 @@ export namespace DocumentRegistry {
         displayName: trans.__('Audio'),
         extensions: ['.m4a'],
         mimeTypes: ['audio/mp4'],
+        icon: audioIcon,
         fileFormat: 'base64'
       },
       {
