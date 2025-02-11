@@ -37,18 +37,42 @@ export class RenderedVideo extends Widget implements IRenderMime.IRenderer {
   }
 
   /**
+   * Dispose of the resources held by the widget.
+   */
+  dispose(): void {
+    if (this._objectUrl) {
+      URL.revokeObjectURL(this._objectUrl);
+      this._objectUrl = null;
+      console.log('Revoked object URL');
+    }
+    super.dispose();
+  }
+
+  /**
    * Render video into this widget's node.
    */
   async renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     const data = model.data[this._mimeType] as string;
-    if (!data) {
-      return;
+    if (
+      !data ||
+      (data.length === this._base64.length && data === this._base64)
+    ) {
+      // Already rendered
+      return Promise.resolve(void 0);
     }
 
-    // Set the source using the base64 data
-    this._video.src = `data:${this._mimeType};base64,${data}`;
+    this._base64 = data;
+    const blob = Private.b64toBlob(data, this._mimeType);
+
+    // Create and set object URL
+    this._objectUrl = URL.createObjectURL(blob);
+    this._video.src = this._objectUrl;
+
+    console.log('Done rendering');
   }
 
+  private _base64 = '';
+  private _objectUrl: string | null = null;
   private _video: HTMLVideoElement;
   private _mimeType: string;
 }
@@ -77,3 +101,31 @@ const extension: IRenderMime.IExtension = {
 };
 
 export default extension;
+
+namespace Private {
+  /**
+   * Copied from the pdf-extension
+   * TODO: move somewhere else?
+   */
+  export function b64toBlob(
+    b64Data: string,
+    contentType: string = '',
+    sliceSize: number = 512
+  ): Blob {
+    const byteCharacters = atob(b64Data);
+    const byteArrays: Uint8Array[] = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: contentType });
+  }
+}
