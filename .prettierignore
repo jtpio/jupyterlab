@@ -60,3 +60,7 @@ stats.json
 
 # pixi environments
 .pixi
+
+# virtual environments
+.venv
+venv

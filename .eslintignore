@@ -49,3 +49,7 @@ packages/lsp/schema.js
 
 # pixi environments
 .pixi
+
+# virtual environments
+.venv
+venv

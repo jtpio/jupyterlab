@@ -75,6 +75,7 @@ pip-wheel-metadata
 Pipfile
 Pipfile.lock
 venv/
+.venv/
 
 # xeus-python debug logs
 xpython_debug_logs
