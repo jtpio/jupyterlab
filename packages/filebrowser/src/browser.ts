@@ -13,6 +13,7 @@ import {
   SidePanel,
   Toolbar
 } from '@jupyterlab/ui-components';
+import { ISignal, Signal } from '@lumino/signaling';
 import { Panel } from '@lumino/widgets';
 import { createRef } from 'react';
 import { BreadCrumbs } from './crumbs';
@@ -302,6 +303,13 @@ export class FileBrowser extends SidePanel {
   }
 
   /**
+   * A signal emitted when the selection changes in the file browser.
+   */
+  get selectionChanged(): ISignal<this, void> {
+    return this._selectionChanged;
+  }
+
+  /**
    * Select an item by name.
    *
    * @param name - The name of the item to select.
@@ -480,7 +488,15 @@ export class FileBrowser extends SidePanel {
    * @returns The created DirListing instance.
    */
   protected createDirListing(options: DirListing.IOptions): DirListing {
-    return new DirListing(options);
+    const dirListing = new DirListing(options);
+
+    // Connect to selection changes in the directory listing
+    dirListing.selectionChanged.connect(() => {
+      // Forward the selection changed signal to our listeners
+      this._selectionChanged.emit();
+    });
+
+    return dirListing;
   }
 
   protected translator: ITranslator;
@@ -539,6 +555,7 @@ export class FileBrowser extends SidePanel {
   private _showHiddenFiles: boolean = false;
   private _showLastModifiedColumn: boolean = true;
   private _sortNotebooksFirst: boolean = false;
+  private _selectionChanged = new Signal<this, void>(this);
 }
 
 /**

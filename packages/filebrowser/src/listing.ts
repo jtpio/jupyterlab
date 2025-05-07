@@ -317,6 +317,13 @@ export class DirListing extends Widget {
   }
 
   /**
+   * A signal fired when the selection changes.
+   */
+  get selectionChanged(): ISignal<DirListing, void> {
+    return this._selectionChanged;
+  }
+
+  /**
    * Create an iterator over the listing's selected items.
    *
    * @returns A new iterator over the listing's selected items.
@@ -710,6 +717,7 @@ export class DirListing extends Widget {
    */
   clearSelectedItems(): void {
     this.selection = Object.create(null);
+    this._selectionChanged.emit();
   }
 
   /**
@@ -2429,6 +2437,11 @@ export class DirListing extends Widget {
     if (focus) {
       this._focusItem(index);
     }
+
+    if (keepExisting) {
+      this._selectionChanged.emit();
+    }
+
     this.update();
   }
 
@@ -2515,6 +2528,7 @@ export class DirListing extends Widget {
     key: 'name'
   };
   private _onItemOpened = new Signal<DirListing, Contents.IModel>(this);
+  private _selectionChanged = new Signal<DirListing, void>(this);
   private _drag: Drag | null = null;
   private _dragData: {
     pressX: number;
