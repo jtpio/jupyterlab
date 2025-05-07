@@ -317,6 +317,13 @@ export class DirListing extends Widget {
   }
 
   /**
+   * A signal fired when the selection changes.
+   */
+  get selectionChanged(): ISignal<DirListing, void> {
+    return this._selectionChanged;
+  }
+
+  /**
    * Create an iterator over the listing's selected items.
    *
    * @returns A new iterator over the listing's selected items.
@@ -709,7 +716,15 @@ export class DirListing extends Widget {
    * Clear the selected items.
    */
   clearSelectedItems(): void {
+    // Check if there were any selected items before clearing
+    const hadSelection = Object.keys(this.selection).length > 0;
+
     this.selection = Object.create(null);
+
+    // Only emit if there were previously selected items
+    if (hadSelection) {
+      this._selectionChanged.emit(void 0);
+    }
   }
 
   /**
@@ -2121,6 +2136,9 @@ export class DirListing extends Widget {
     const path = items[index].path;
     const selected = Object.keys(this.selection);
 
+    // Store a copy of the previous selection to check if it changed
+    const previousSelection = { ...this.selection };
+
     const isLeftClickOnCheckbox =
       event.button === 0 &&
       // On Mac, a left-click with the ctrlKey is treated as a right-click.
@@ -2152,6 +2170,17 @@ export class DirListing extends Widget {
       // Select only the given item.
       return this._selectItem(index, false, true);
     }
+
+    // Check if selection actually changed
+    const selectionChanged =
+      Object.keys(previousSelection).length !==
+        Object.keys(this.selection).length ||
+      !Object.keys(this.selection).every(key => previousSelection[key]);
+
+    if (selectionChanged) {
+      this._selectionChanged.emit(void 0);
+    }
+
     this.update();
   }
 
@@ -2212,12 +2241,20 @@ export class DirListing extends Widget {
     const target = items[index];
     let shouldAdd = true;
 
+    // Store a copy of the previous selection to check if it changed
+    const previousSelection = { ...this.selection };
+
     if (index === fromIndex) {
       // This follows the convention in Ubuntu and Windows, which is to allow
       // the focussed item to gain but not lose selected status on shift-click.
       // (MacOS is irrelevant here because MacOS Finder has no notion of a
       // focused-but-not-selected state.)
+      const changed = !this.selection[target.path];
       this.selection[target.path] = true;
+
+      if (changed) {
+        this._selectionChanged.emit(void 0);
+      }
       return;
     }
 
@@ -2270,6 +2307,16 @@ export class DirListing extends Widget {
         }
         delete this.selection[items[i].path];
       }
+    }
+
+    // Check if selection actually changed after all operations
+    const selectionChanged =
+      Object.keys(previousSelection).length !==
+        Object.keys(this.selection).length ||
+      !Object.keys(this.selection).every(key => previousSelection[key]);
+
+    if (selectionChanged) {
+      this._selectionChanged.emit(void 0);
     }
   }
 
@@ -2420,6 +2467,10 @@ export class DirListing extends Widget {
   ) {
     // Selected the given row(s)
     const items = this._sortedItems;
+
+    // Store a copy of the previous selection to check if it changed
+    const previousSelection = { ...this.selection };
+
     if (!keepExisting) {
       this.clearSelectedItems();
     }
@@ -2429,6 +2480,17 @@ export class DirListing extends Widget {
     if (focus) {
       this._focusItem(index);
     }
+
+    // Check if selection actually changed
+    const selectionChanged =
+      Object.keys(previousSelection).length !==
+        Object.keys(this.selection).length ||
+      !Object.keys(this.selection).every(key => previousSelection[key]);
+
+    if (selectionChanged) {
+      this._selectionChanged.emit(void 0);
+    }
+
     this.update();
   }
 
@@ -2439,12 +2501,24 @@ export class DirListing extends Widget {
     // Update the selection.
     const existing = Object.keys(this.selection);
     this.clearSelectedItems();
-    for (const item of this._model.items()) {
-      const path = item.path;
-      if (existing.indexOf(path) !== -1) {
-        this.selection[path] = true;
+
+    let selectionChanged = false;
+    if (existing.length > 0) {
+      let selectionCount = 0;
+      for (const item of this._model.items()) {
+        const path = item.path;
+        if (existing.indexOf(path) !== -1) {
+          this.selection[path] = true;
+          selectionCount++;
+        }
+      }
+
+      // If the number of selected items changed, emit the signal
+      if (selectionCount !== existing.length) {
+        this._selectionChanged.emit(void 0);
       }
     }
+
     if (this.isVisible) {
       // Update the sorted items.
       this.sort(this.sortState);
@@ -2575,6 +2649,7 @@ export class DirListing extends Widget {
   private _paddingWidth: number = 0;
   private _handleWidth: number = DEFAULT_HANDLE_WIDTH;
   private _lastRenderedState = new WeakMap<HTMLElement, string>();
+  private _selectionChanged = new Signal<DirListing, void>(this);
 }
 
 /**
