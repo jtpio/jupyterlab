@@ -11,10 +11,15 @@ import {
 } from '@jupyterlab/apputils';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
-import { CommandPaletteSvg, paletteIcon } from '@jupyterlab/ui-components';
+import {
+  CommandPaletteSvg,
+  filterListIcon,
+  paletteIcon
+} from '@jupyterlab/ui-components';
 import { find } from '@lumino/algorithm';
 import { CommandRegistry } from '@lumino/commands';
 import { DisposableDelegate, IDisposable } from '@lumino/disposable';
+import { h, VirtualElement } from '@lumino/virtualdom';
 import { CommandPalette } from '@lumino/widgets';
 
 /**
@@ -25,6 +30,38 @@ namespace CommandIDs {
 }
 
 const PALETTE_PLUGIN_ID = '@jupyterlab/apputils-extension:palette';
+
+const searchHeaderIcon = filterListIcon.bindprops({
+  stylesheet: 'commandPaletteHeader',
+  className: 'jp-icon-hoverShow-content'
+});
+
+/**
+ * A custom command palette renderer that automatically applies styling to Recent command headers.
+ */
+class RecentAwareRenderer extends CommandPaletteSvg.Renderer {
+  /**
+   * Render the virtual element for a command palette header.
+   *
+   * @param data - The data to use for rendering the header.
+   *
+   * @returns A virtual element representing the header.
+   */
+  renderHeader(data: CommandPalette.IHeaderRenderData): VirtualElement {
+    const content = this.formatHeader(data);
+    const isRecentHeader = data.category === 'Recent';
+
+    return h.li(
+      {
+        className: isRecentHeader
+          ? 'lm-CommandPalette-header jp-icon-hoverShow jp-CommandPalette-recent-category'
+          : 'lm-CommandPalette-header jp-icon-hoverShow'
+      },
+      content,
+      h.span(searchHeaderIcon)
+    );
+  }
+}
 
 /**
  * A thin wrapper around the `CommandPalette` class to conform with the
@@ -73,6 +110,25 @@ export class Palette implements ICommandPalette {
     });
   }
 
+  /**
+   * Update the underlying palette instance.
+   *
+   * @param palette - The new palette instance.
+   */
+  updatePalette(palette: CommandPalette): void {
+    const trans = this.translator.load('jupyterlab');
+    this._palette = palette;
+    this._palette.title.label = '';
+    this._palette.title.caption = trans.__('Command Palette');
+  }
+
+  /**
+   * Get the current palette instance.
+   */
+  get palette(): CommandPalette {
+    return this._palette;
+  }
+
   protected translator: ITranslator;
   private _palette: CommandPalette;
 }
@@ -91,8 +147,19 @@ export namespace Palette {
   ): ICommandPalette {
     const { commands, shell } = app;
     const trans = translator.load('jupyterlab');
-    const palette = Private.createPalette(app, translator);
-    const modalPalette = new ModalCommandPalette({ commandPalette: palette });
+    let maxRecentCommands = 5; // default value
+    let selectFirstByDefault = false; // default value
+
+    let palette: CommandPalette = Private.createPalette(
+      app,
+      translator,
+      maxRecentCommands
+    );
+    const modalPalette = new ModalCommandPalette({
+      commandPalette: palette,
+      selectFirstByDefault: selectFirstByDefault
+    });
+    const paletteWrapper = new Palette(palette, translator);
     let modal = false;
 
     palette.node.setAttribute('role', 'region');
@@ -101,10 +168,29 @@ export namespace Palette {
       trans.__('Command Palette Section')
     );
     shell.add(palette, 'left', { rank: 300, type: 'Command Palette' });
+
     if (settingRegistry) {
       const loadSettings = settingRegistry.load(PALETTE_PLUGIN_ID);
       const updateSettings = (settings: ISettingRegistry.ISettings): void => {
         const newModal = settings.get('modal').composite as boolean;
+        const newMaxRecentCommands = settings.get('maxRecentCommands')
+          .composite as number;
+        const newSelectFirstByDefault = settings.get('selectFirstByDefault')
+          .composite as boolean;
+
+        // Update max recent commands if it changed
+        if (newMaxRecentCommands !== maxRecentCommands) {
+          maxRecentCommands = newMaxRecentCommands;
+          // Use the setter instead of recreating the palette
+          palette.maxRecentCommands = maxRecentCommands;
+        }
+
+        // Update selectFirstByDefault setting
+        if (newSelectFirstByDefault !== selectFirstByDefault) {
+          selectFirstByDefault = newSelectFirstByDefault;
+          modalPalette.selectFirstByDefault = selectFirstByDefault;
+        }
+
         if (modal && !newModal) {
           palette.parent = null;
           modalPalette.detach();
@@ -161,7 +247,7 @@ export namespace Palette {
 
     palette.inputNode.placeholder = trans.__('SEARCH');
 
-    return new Palette(palette, translator);
+    return paletteWrapper;
   }
 
   /**
@@ -172,7 +258,7 @@ export namespace Palette {
     restorer: ILayoutRestorer,
     translator: ITranslator
   ): void {
-    const palette = Private.createPalette(app, translator);
+    const palette: CommandPalette = Private.createPalette(app, translator, 5); // default value
     // Let the application restorer track the command palette for restoration of
     // application state (e.g. setting the command palette as the current side bar
     // widget).
@@ -185,28 +271,23 @@ export namespace Palette {
  */
 namespace Private {
   /**
-   * The private command palette instance.
-   */
-  let palette: CommandPalette;
-
-  /**
    * Create the application-wide command palette.
    */
   export function createPalette(
     app: JupyterFrontEnd,
-    translator: ITranslator
+    translator: ITranslator,
+    maxRecentCommands: number = 5
   ): CommandPalette {
-    if (!palette) {
-      // use a renderer tweaked to use inline svg icons
-      palette = new CommandPalette({
-        commands: app.commands,
-        renderer: CommandPaletteSvg.defaultRenderer
-      });
-      palette.id = 'command-palette';
-      palette.title.icon = paletteIcon;
-      const trans = translator.load('jupyterlab');
-      palette.title.label = trans.__('Commands');
-    }
+    // Use our custom renderer that handles recent command styling automatically
+    const palette = new CommandPalette({
+      commands: app.commands,
+      renderer: new RecentAwareRenderer(),
+      maxRecentCommands: maxRecentCommands
+    });
+    palette.id = 'command-palette';
+    palette.title.icon = paletteIcon;
+    const trans = translator.load('jupyterlab');
+    palette.title.label = trans.__('Commands');
 
     return palette;
   }

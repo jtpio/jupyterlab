@@ -22,6 +22,7 @@ export class ModalCommandPalette extends Panel {
     this.addClass('jp-ThemedContainer');
     this.id = 'modal-command-palette';
     this.palette = options.commandPalette;
+    this._selectFirstByDefault = options.selectFirstByDefault ?? false;
     this._commandPalette.commands.commandExecuted.connect(() => {
       if (this.isAttached && this.isVisible) {
         this.hideAndReset();
@@ -32,12 +33,24 @@ export class ModalCommandPalette extends Panel {
     this.node.tabIndex = 0;
   }
 
+  /**
+   * Whether to select the first item by default when the palette is shown.
+   */
+  get selectFirstByDefault(): boolean {
+    return this._selectFirstByDefault;
+  }
+
+  set selectFirstByDefault(value: boolean) {
+    this._selectFirstByDefault = value;
+  }
+
   get palette(): CommandPalette {
     return this._commandPalette;
   }
 
   set palette(value: CommandPalette) {
     this._commandPalette = value;
+
     if (!this.searchIconGroup) {
       this._commandPalette.inputNode.insertAdjacentElement(
         'afterend',
@@ -138,6 +151,14 @@ export class ModalCommandPalette extends Panel {
 
   protected onAfterShow(msg: Message): void {
     document.addEventListener('blur', this, true);
+
+    // Select the first item if configured to do so
+    if (this._selectFirstByDefault) {
+      // Use requestAnimationFrame to ensure the palette has been rendered
+      requestAnimationFrame(() => {
+        this._selectFirstItem();
+      });
+    }
   }
 
   /**
@@ -166,11 +187,22 @@ export class ModalCommandPalette extends Panel {
     }
   }
 
+  /**
+   * Select the first available command item in the palette.
+   */
+  private _selectFirstItem(): void {
+    // Use the internal _activateNextItem method which properly handles selection
+    // This is much cleaner than simulating events or manipulating CSS
+    (this._commandPalette as any)._activateNextItem();
+  }
+
   private _commandPalette: CommandPalette;
+  private _selectFirstByDefault: boolean;
 }
 
 export namespace ModalCommandPalette {
   export interface IOptions {
     commandPalette: CommandPalette;
+    selectFirstByDefault?: boolean;
   }
 }

@@ -33,6 +33,18 @@
       "description": "Whether the command palette should be modal or in the left panel.",
       "type": "boolean",
       "default": true
+    },
+    "maxRecentCommands": {
+      "title": "Maximum Recent Commands",
+      "description": "The maximum number of recently executed commands to show at the top of the command palette. Set to 0 to disable recent commands.",
+      "type": "integer",
+      "default": 5
+    },
+    "selectFirstByDefault": {
+      "title": "Select First Item by Default",
+      "description": "Whether to automatically select the first item in the command palette when it opens.",
+      "type": "boolean",
+      "default": true
     }
   },
   "type": "object",

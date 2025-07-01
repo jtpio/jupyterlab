@@ -1,0 +1,32 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------
+| Recent Commands Styling
+|----------------------------------------------------------------------------*/
+
+/* Style items that come after a Recent category header */
+.jp-CommandPalette-recent-category ~ .lm-CommandPalette-item {
+  border-right: 3px solid var(--jp-brand-color3);
+}
+
+/*
+ * Stop the border styling when we encounter the next category header.
+ * Items after any subsequent header should not have the recent styling.
+ */
+.jp-CommandPalette-recent-category
+  ~ .lm-CommandPalette-header
+  ~ .lm-CommandPalette-item {
+  border-right: none;
+}
+
+/*
+ * Ensure active recent items maintain the border when we stop at the next header
+ */
+.jp-CommandPalette-recent-category
+  ~ .lm-CommandPalette-header
+  ~ .lm-CommandPalette-item.lm-mod-active {
+  border-right-color: transparent;
+}

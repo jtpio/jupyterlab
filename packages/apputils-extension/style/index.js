@@ -11,5 +11,5 @@ import '@jupyterlab/apputils/style/index.js';
 import '@jupyterlab/docregistry/style/index.js';
 import '@jupyterlab/application/style/index.js';
 import '@jupyterlab/mainmenu/style/index.js';
-
 import './base.css';
+import './palette.css';
