@@ -1,63 +1,26 @@
 {
-  "title": "File Browser Widget",
-  "description": "File Browser widget settings.",
+  "title": "File Browser Upload",
+  "description": "File Browser upload functionality settings.",
   "jupyter.lab.toolbars": {
-    "FileBrowser": [
-      {
-        "name": "new-directory",
-        "command": "filebrowser:create-new-directory",
-        "rank": 10
-      },
-      { "name": "refresh", "command": "filebrowser:refresh", "rank": 30 },
-      {
-        "name": "toggle-file-filter",
-        "command": "filebrowser:toggle-file-filter",
-        "rank": 40
-      }
-    ]
+    "FileBrowserUpload": [{ "name": "uploader", "rank": 20 }]
   },
-  "jupyter.lab.menus": {
-    "main": [
-      {
-        "id": "jp-mainmenu-view",
-        "items": [
-          {
-            "command": "filebrowser:toggle-main",
-            "rank": 1
-          }
-        ]
-      },
-      {
-        "id": "jp-mainmenu-settings",
-        "items": [
-          {
-            "type": "separator",
-            "rank": 5
-          },
-          {
-            "command": "filebrowser:toggle-navigate-to-current-directory",
-            "rank": 5
-          },
-          {
-            "type": "separator",
-            "rank": 5
-          }
-        ]
-      }
-    ]
-  },
-  "jupyter.lab.shortcuts": [
-    {
-      "command": "filebrowser:toggle-main",
-      "keys": ["Accel Shift F"],
-      "selector": "body"
-    }
-  ],
   "jupyter.lab.transform": true,
   "properties": {
+    "autoOpenUploads": {
+      "type": "boolean",
+      "title": "Auto-open uploads",
+      "description": "Automatically open uploaded notebooks and supported files",
+      "default": true
+    },
+    "maxAutoOpenSizeMB": {
+      "type": "number",
+      "title": "Max auto-open size",
+      "description": "Maximum file size (MB) to auto-open files on upload",
+      "default": 50
+    },
     "toolbar": {
-      "title": "File browser toolbar items",
-      "description": "Note: To disable a toolbar item,\ncopy it to User Preferences and add the\n\"disabled\" key. The following example will disable the refresh button:\n{\n  \"toolbar\": [\n    {\n      \"name\": \"refresh\",\n      \"disabled\": true\n    }\n  ]\n}\n\nToolbar description:",
+      "title": "File browser upload toolbar items",
+      "description": "Note: To disable a toolbar item,\ncopy it to User Preferences and add the\n\"disabled\" key. The following example will disable the uploader button:\n{\n  \"toolbar\": [\n    {\n      \"name\": \"uploader\",\n      \"disabled\": true\n    }\n  ]\n}\n\nToolbar description:",
       "items": {
         "$ref": "#/definitions/toolbarItem"
       },

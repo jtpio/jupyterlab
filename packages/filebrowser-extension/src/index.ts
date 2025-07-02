@@ -74,6 +74,11 @@ const FILE_BROWSER_FACTORY = 'FileBrowser';
 const FILE_BROWSER_PLUGIN_ID = '@jupyterlab/filebrowser-extension:browser';
 
 /**
+ * Plugin ID for the upload functionality
+ */
+const UPLOAD_PLUGIN_ID = '@jupyterlab/filebrowser-extension:upload';
+
+/**
  * The command IDs used by the file browser plugin.
  */
 namespace CommandIDs {
@@ -156,6 +161,221 @@ namespace CommandIDs {
  * The file browser namespace token.
  */
 const namespace = 'filebrowser';
+
+/**
+ * A plugin providing file upload status.
+ */
+export const fileUploadStatus: JupyterFrontEndPlugin<void> = {
+  id: '@jupyterlab/filebrowser-extension:file-upload-status',
+  description: 'Adds a file upload status widget.',
+  autoStart: true,
+  requires: [IFileBrowserFactory, ITranslator],
+  optional: [IStatusBar],
+  activate: (
+    app: JupyterFrontEnd,
+    browser: IFileBrowserFactory,
+    translator: ITranslator,
+    statusBar: IStatusBar | null
+  ) => {
+    if (!statusBar) {
+      // Automatically disable if statusbar missing
+      return;
+    }
+    const item = new FileUploadStatus({
+      tracker: browser.tracker,
+      translator
+    });
+
+    statusBar.registerStatusItem(
+      '@jupyterlab/filebrowser-extension:file-upload-status',
+      {
+        item,
+        align: 'middle',
+        isActive: () => {
+          return !!item.model && item.model.items.length > 0;
+        },
+        activeStateChanged: item.model.stateChanged
+      }
+    );
+  }
+};
+
+/**
+ * A plugin to add upload functionality to the file browser toolbar.
+ */
+const uploadToolbar: JupyterFrontEndPlugin<void> = {
+  id: '@jupyterlab/filebrowser-extension:upload',
+  description: 'Adds the upload button to the file browser toolbar.',
+  requires: [
+    IDefaultFileBrowser,
+    ISettingRegistry,
+    IToolbarWidgetRegistry,
+    ITranslator
+  ],
+  autoStart: true,
+  activate: (
+    app: JupyterFrontEnd,
+    browser: IDefaultFileBrowser,
+    settingRegistry: ISettingRegistry,
+    toolbarRegistry: IToolbarWidgetRegistry,
+    translator: ITranslator
+  ): void => {
+    // Register uploader toolbar factory
+    toolbarRegistry.addFactory(
+      FILE_BROWSER_FACTORY,
+      'uploader',
+      (browser: FileBrowser) =>
+        new Uploader({ model: browser.model, translator })
+    );
+
+    // Set up toolbar for upload functionality
+    setToolbar(
+      browser,
+      createToolbarFactory(
+        toolbarRegistry,
+        settingRegistry,
+        FILE_BROWSER_FACTORY,
+        uploadToolbar.id,
+        translator
+      )
+    );
+  }
+};
+
+/**
+ * A plugin to handle file upload notifications and auto-opening.
+ */
+const notifyUploadPlugin: JupyterFrontEndPlugin<void> = {
+  id: '@jupyterlab/filebrowser-extension:notify-upload',
+  requires: [IDefaultFileBrowser, ISettingRegistry, ITranslator],
+  description: 'Adds feature to auto-open supported files after upload',
+  autoStart: true,
+  activate: async (
+    app: JupyterFrontEnd,
+    defaultBrowser: FileBrowser,
+    settingRegistry: ISettingRegistry,
+    translator: ITranslator
+  ) => {
+    const trans = translator.load('jupyterlab');
+    // load and watch settings
+    const settings = await settingRegistry.load(UPLOAD_PLUGIN_ID);
+    let autoOpen = settings.get('autoOpenUploads').composite as boolean;
+    let maxSize =
+      (settings.get('maxAutoOpenSizeMB').composite as number) * 1024 * 1024;
+
+    settings.changed.connect(() => {
+      autoOpen = settings.get('autoOpenUploads').composite as boolean;
+      maxSize =
+        (settings.get('maxAutoOpenSizeMB').composite as number) * 1024 * 1024;
+    });
+
+    // attach to the Uploader after restore
+    void app.restored.then(() => {
+      const widgets = Array.from(defaultBrowser.toolbar.children());
+      const uploader = widgets.find(w => w instanceof Uploader) as
+        | Uploader
+        | undefined;
+      if (!uploader) {
+        console.warn('Uploader widget not found');
+        return;
+      }
+
+      uploader.filesUploaded.connect((_sender, models) => {
+        // single-file case
+        // Get all allowed extensions
+        const allFileTypes = Array.from(app.docRegistry.fileTypes());
+        const allExtensions = allFileTypes.reduce<string[]>((acc, ft) => {
+          if (ft.extensions) {
+            for (const ext of ft.extensions) {
+              acc.push(ext.toLowerCase());
+            }
+          }
+          return acc;
+        }, []);
+
+        // Check if the uploaded file has an allowed extension
+        const fileName = models[0].name.toLowerCase();
+        const isAllowedFileType = allExtensions.some(ext =>
+          fileName.endsWith(ext)
+        );
+        if (
+          models.length === 1 &&
+          (models[0].type === 'notebook' || models[0].type === 'file')
+        ) {
+          const file = models[0];
+          if (
+            autoOpen &&
+            file.size &&
+            file.size <= maxSize &&
+            isAllowedFileType
+          ) {
+            // open immediately
+            app.commands
+              .execute('docmanager:open', { path: file.path })
+              .catch(err => {
+                void showErrorMessage(`Opening ${file.name} failed`, err);
+              });
+          } else {
+            // notify and offer an "Open" button
+            Notification.emit(
+              trans.__(
+                'Uploaded %1%2',
+                file.name,
+                file.size ? ` (${formatFileSize(file.size, 1, 1024)})` : ''
+              ),
+              'info',
+              {
+                autoClose: 5000,
+                actions: [
+                  {
+                    label: trans.__('Open File'),
+                    callback: () => {
+                      void app.commands
+                        .execute('docmanager:open', { path: file.path })
+                        .catch(err => {
+                          void showErrorMessage(
+                            `Could not open ${file.name}`,
+                            err
+                          );
+                        });
+                    }
+                  }
+                ]
+              }
+            );
+          }
+        } else {
+          // multi-file case
+          Notification.emit(
+            trans.__('Upload complete (%1 files)', models.length),
+            'info',
+            {
+              autoClose: 5000,
+              actions: [
+                {
+                  label: trans.__('Open All'),
+                  callback: () => {
+                    models.forEach(
+                      m =>
+                        void app.commands
+                          .execute('docmanager:open', { path: m.path })
+                          .catch(err => {
+                            void showErrorMessage(
+                              `Could not open ${m.path}`,
+                              err
+                            );
+                          })
+                    );
+                  }
+                }
+              ]
+            }
+          );
+        }
+      });
+    });
+  }
+};
 
 /**
  * The default file browser extension.
@@ -482,14 +702,6 @@ const browserWidget: JupyterFrontEndPlugin<void> = {
     const { tracker } = factory;
     const trans = translator.load('jupyterlab');
 
-    // Top-level toolbar
-    toolbarRegistry.addFactory(
-      FILE_BROWSER_FACTORY,
-      'uploader',
-      (browser: FileBrowser) =>
-        new Uploader({ model: browser.model, translator })
-    );
-
     setToolbar(
       browser,
       createToolbarFactory(
@@ -786,44 +998,6 @@ const openBrowserTabPlugin: JupyterFrontEndPlugin<void> = {
 };
 
 /**
- * A plugin providing file upload status.
- */
-export const fileUploadStatus: JupyterFrontEndPlugin<void> = {
-  id: '@jupyterlab/filebrowser-extension:file-upload-status',
-  description: 'Adds a file upload status widget.',
-  autoStart: true,
-  requires: [IFileBrowserFactory, ITranslator],
-  optional: [IStatusBar],
-  activate: (
-    app: JupyterFrontEnd,
-    browser: IFileBrowserFactory,
-    translator: ITranslator,
-    statusBar: IStatusBar | null
-  ) => {
-    if (!statusBar) {
-      // Automatically disable if statusbar missing
-      return;
-    }
-    const item = new FileUploadStatus({
-      tracker: browser.tracker,
-      translator
-    });
-
-    statusBar.registerStatusItem(
-      '@jupyterlab/filebrowser-extension:file-upload-status',
-      {
-        item,
-        align: 'middle',
-        isActive: () => {
-          return !!item.model && item.model.items.length > 0;
-        },
-        activeStateChanged: item.model.stateChanged
-      }
-    );
-  }
-};
-
-/**
  * A plugin to open files from remote URLs
  */
 const openUrlPlugin: JupyterFrontEndPlugin<void> = {
@@ -902,138 +1076,6 @@ const openUrlPlugin: JupyterFrontEndPlugin<void> = {
         category: trans.__('File Operations')
       });
     }
-  }
-};
-
-const notifyUploadPlugin: JupyterFrontEndPlugin<void> = {
-  id: '@jupyterlab/filebrowser-extension:notify-upload',
-  requires: [IDefaultFileBrowser, ISettingRegistry, ITranslator],
-  description: 'Adds feature to auto-open supported files after upload',
-  autoStart: true,
-  activate: async (
-    app: JupyterFrontEnd,
-    defaultBrowser: FileBrowser,
-    settingRegistry: ISettingRegistry,
-    translator: ITranslator
-  ) => {
-    const trans = translator.load('jupyterlab');
-    // load and watch settings
-    const settings = await settingRegistry.load(FILE_BROWSER_PLUGIN_ID);
-    let autoOpen = settings.get('autoOpenUploads').composite as boolean;
-    let maxSize =
-      (settings.get('maxAutoOpenSizeMB').composite as number) * 1024 * 1024;
-
-    settings.changed.connect(() => {
-      autoOpen = settings.get('autoOpenUploads').composite as boolean;
-      maxSize =
-        (settings.get('maxAutoOpenSizeMB').composite as number) * 1024 * 1024;
-    });
-
-    // attach to the Uploader after restore
-    void app.restored.then(() => {
-      const widgets = Array.from(defaultBrowser.toolbar.children());
-      const uploader = widgets.find(w => w instanceof Uploader) as
-        | Uploader
-        | undefined;
-      if (!uploader) {
-        console.warn('Uploader widget not found');
-        return;
-      }
-
-      uploader.filesUploaded.connect((_sender, models) => {
-        // single-file case
-        // Get all allowed extensions
-        const allFileTypes = Array.from(app.docRegistry.fileTypes());
-        const allExtensions = allFileTypes.reduce<string[]>((acc, ft) => {
-          if (ft.extensions) {
-            for (const ext of ft.extensions) {
-              acc.push(ext.toLowerCase());
-            }
-          }
-          return acc;
-        }, []);
-
-        // Check if the uploaded file has an allowed extension
-        const fileName = models[0].name.toLowerCase();
-        const isAllowedFileType = allExtensions.some(ext =>
-          fileName.endsWith(ext)
-        );
-        if (
-          models.length === 1 &&
-          (models[0].type === 'notebook' || models[0].type === 'file')
-        ) {
-          const file = models[0];
-          if (
-            autoOpen &&
-            file.size &&
-            file.size <= maxSize &&
-            isAllowedFileType
-          ) {
-            // open immediately
-            app.commands
-              .execute('docmanager:open', { path: file.path })
-              .catch(err => {
-                void showErrorMessage(`Opening ${file.name} failed`, err);
-              });
-          } else {
-            // notify and offer an “Open” button
-            Notification.emit(
-              trans.__(
-                'Uploaded %1%2',
-                file.name,
-                file.size ? ` (${formatFileSize(file.size, 1, 1024)})` : ''
-              ),
-              'info',
-              {
-                autoClose: 5000,
-                actions: [
-                  {
-                    label: trans.__('Open File'),
-                    callback: () => {
-                      void app.commands
-                        .execute('docmanager:open', { path: file.path })
-                        .catch(err => {
-                          void showErrorMessage(
-                            `Could not open ${file.name}`,
-                            err
-                          );
-                        });
-                    }
-                  }
-                ]
-              }
-            );
-          }
-        } else {
-          // multi-file case
-          Notification.emit(
-            trans.__('Upload complete (%1 files)', models.length),
-            'info',
-            {
-              autoClose: 5000,
-              actions: [
-                {
-                  label: trans.__('Open All'),
-                  callback: () => {
-                    models.forEach(
-                      m =>
-                        void app.commands
-                          .execute('docmanager:open', { path: m.path })
-                          .catch(err => {
-                            void showErrorMessage(
-                              `Could not open ${m.path}`,
-                              err
-                            );
-                          })
-                    );
-                  }
-                }
-              ]
-            }
-          );
-        }
-      });
-    });
   }
 };
 
@@ -1526,12 +1568,13 @@ const plugins: JupyterFrontEndPlugin<any>[] = [
   browser,
   browserSettings,
   shareFile,
-  fileUploadStatus,
   downloadPlugin,
   browserWidget,
   openWithPlugin,
   openBrowserTabPlugin,
   openUrlPlugin,
+  fileUploadStatus,
+  uploadToolbar,
   notifyUploadPlugin
 ];
 export default plugins;
