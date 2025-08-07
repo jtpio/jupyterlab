@@ -126,6 +126,18 @@ function activate(
     });
   }
 
+  // Listen for changes to pluginsToSkip setting
+  registry
+    .load(plugin.id)
+    .then(settings => {
+      settings.changed.connect(() => {
+        // If the pluginsToSkip setting changes and we have an active widget,
+        // we could notify the user or recreate the widget, but for now we'll
+        // let it take effect on the next open
+      });
+    })
+    .catch(console.error);
+
   const openUi = async (args: { query?: string }) => {
     if (tracker.currentWidget && !tracker.currentWidget.isDisposed) {
       if (!tracker.currentWidget.isAttached) {
@@ -140,6 +152,23 @@ function activate(
 
     const key = plugin.id;
 
+    // Load the settings to get the pluginsToSkip configuration
+    let pluginsToSkip: string[];
+    try {
+      const settings = await registry.load(plugin.id);
+      pluginsToSkip = settings.get('pluginsToSkip').composite as string[];
+    } catch (error) {
+      console.warn(
+        'Failed to load pluginsToSkip setting, using defaults:',
+        error
+      );
+      // Fallback to the original hardcoded values
+      pluginsToSkip = [
+        '@jupyterlab/application-extension:context-menu',
+        '@jupyterlab/mainmenu-extension:plugin'
+      ];
+    }
+
     const { SettingsEditor } = await import('@jupyterlab/settingeditor');
 
     const editor = new MainAreaWidget<SettingsEditor>({
@@ -149,10 +178,7 @@ function activate(
         registry,
         state,
         commands,
-        toSkip: [
-          '@jupyterlab/application-extension:context-menu',
-          '@jupyterlab/mainmenu-extension:plugin'
-        ],
+        toSkip: pluginsToSkip,
         translator,
         status,
         query: args.query as string
@@ -319,6 +345,23 @@ function activateJSON(
       const key = plugin.id;
       const when = app.restored;
 
+      // Load the settings to get the pluginsToSkip configuration
+      let pluginsToSkip: string[];
+      try {
+        const settings = await registry.load(plugin.id);
+        pluginsToSkip = settings.get('pluginsToSkip').composite as string[];
+      } catch (error) {
+        console.warn(
+          'Failed to load pluginsToSkip setting, using defaults:',
+          error
+        );
+        // Fallback to the original hardcoded values
+        pluginsToSkip = [
+          '@jupyterlab/application-extension:context-menu',
+          '@jupyterlab/mainmenu-extension:plugin'
+        ];
+      }
+
       const { JsonSettingEditor } = await import('@jupyterlab/settingeditor');
 
       const editor = new JsonSettingEditor({
@@ -333,6 +376,7 @@ function activateJSON(
         rendermime,
         state,
         translator,
+        toSkip: pluginsToSkip,
         when
       });
 

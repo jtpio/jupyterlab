@@ -66,7 +66,8 @@ export class JsonSettingEditor extends SplitPanel {
     const list = (this._list = new PluginList({
       confirm,
       registry,
-      translator: this.translator
+      translator: this.translator,
+      toSkip: options.toSkip
     }));
     const when = options.when;
 
@@ -383,6 +384,11 @@ export namespace JsonSettingEditor {
      * The application language translator.
      */
     translator?: ITranslator;
+
+    /**
+     * List of plugins to skip
+     */
+    toSkip?: string[];
   }
 
   /**

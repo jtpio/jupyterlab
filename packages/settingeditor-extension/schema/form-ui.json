@@ -7,6 +7,18 @@
       "description": "Set the type of editor to use while editing your settings.",
       "enum": ["json", "ui"],
       "default": "ui"
+    },
+    "pluginsToSkip": {
+      "title": "Plugins to skip",
+      "description": "List of plugin IDs to skip in the settings editor.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "@jupyterlab/application-extension:context-menu",
+        "@jupyterlab/mainmenu-extension:plugin"
+      ]
     }
   },
   "additionalProperties": false,
