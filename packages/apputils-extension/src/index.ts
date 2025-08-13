@@ -34,6 +34,7 @@ import { jupyterFaviconIcon } from '@jupyterlab/ui-components';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { DisposableDelegate } from '@lumino/disposable';
 import { Debouncer, Throttler } from '@lumino/polling';
+import { Widget } from '@lumino/widgets';
 import { announcements } from './announcements';
 import { licensesClient, licensesPlugin } from './licensesplugin';
 import { notificationPlugin } from './notificationplugin';
@@ -71,6 +72,8 @@ namespace CommandIDs {
   export const toggleHeader = 'apputils:toggle-header';
 
   export const displayShortcuts = 'apputils:display-shortcuts';
+
+  export const clearRecentCommands = 'apputils:clear-recent-commands';
 }
 
 /**
@@ -672,9 +675,52 @@ const utilityCommands: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    commands.addCommand(CommandIDs.clearRecentCommands, {
+      label: trans.__('Clear Recent Commands'),
+      caption: trans.__(
+        'Clear the list of recently used commands from the command palette'
+      ),
+      execute: () => {
+        // Find the command palette widget in the shell
+        const widgets = app.shell.widgets('left');
+        let paletteWidget: Widget | undefined;
+
+        for (const widget of widgets) {
+          if (widget.id === 'command-palette') {
+            paletteWidget = widget;
+            break;
+          }
+        }
+
+        if (paletteWidget) {
+          // Access the underlying CommandPalette instance through the Palette wrapper
+          const paletteWrapper = paletteWidget as any;
+          if (
+            paletteWrapper.palette &&
+            typeof paletteWrapper.palette.maxRecentCommands === 'number'
+          ) {
+            const commandPalette = paletteWrapper.palette;
+            // Temporarily set maxRecentCommands to 0 to clear recent commands
+            const originalValue = commandPalette.maxRecentCommands;
+            commandPalette.maxRecentCommands = 0;
+
+            // Force a refresh of the palette
+            commandPalette.refresh();
+
+            // Restore the original value
+            commandPalette.maxRecentCommands = originalValue;
+
+            // Refresh again to restore normal functionality
+            commandPalette.refresh();
+          }
+        }
+      }
+    });
+
     if (palette) {
       const category: string = trans.__('Help');
       palette.addItem({ command: CommandIDs.displayShortcuts, category });
+      palette.addItem({ command: CommandIDs.clearRecentCommands, category });
     }
   }
 };
