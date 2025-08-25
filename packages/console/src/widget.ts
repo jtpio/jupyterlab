@@ -702,6 +702,15 @@ export class CodeConsole extends Widget {
 
     this._history.editor = promptCell.editor;
 
+    // Connect to editor events to handle input cell growth
+    if (promptCell.editor) {
+      promptCell.editor.model.sharedModel.changed.connect(() => {
+        requestAnimationFrame(() => {
+          this._adjustSplitPanelForInputGrowth();
+        });
+      });
+    }
+
     if (!this._config.clearCodeContentOnExecute) {
       promptCell.model.sharedModel.setSource(previousContent);
       if (previousCursorPosition) {
@@ -941,6 +950,53 @@ export class CodeConsole extends Widget {
     // TODO: de-duplicate with code in notebook/src/widget.ts
     const inReadWrite = DOMUtils.hasActiveEditableElement(this.node);
     this.node.classList.toggle(READ_WRITE_CLASS, inReadWrite);
+  }
+
+  /**
+   * Adjust split panel sizes when the input cell grows.
+   */
+  private _adjustSplitPanelForInputGrowth(): void {
+    if (!this._input.node || !this._content.node) {
+      return;
+    }
+
+    const { promptCellPosition = 'bottom' } = this._config;
+
+    // Only adjust for vertical layouts (top/bottom positions)
+    if (promptCellPosition === 'left' || promptCellPosition === 'right') {
+      return;
+    }
+
+    const inputHeight = this._input.node.scrollHeight;
+    const totalHeight = this._splitPanel.node.clientHeight;
+
+    if (totalHeight <= 0 || inputHeight <= 0) {
+      this._splitPanel.fit();
+      return;
+    }
+
+    const remainingHeight = totalHeight - inputHeight;
+    let contentRatio: number;
+    let inputRatio: number;
+
+    if (promptCellPosition === 'bottom') {
+      contentRatio = remainingHeight / totalHeight;
+      inputRatio = inputHeight / totalHeight;
+    } else {
+      inputRatio = inputHeight / totalHeight;
+      contentRatio = remainingHeight / totalHeight;
+    }
+
+    // Convert to the format expected by setRelativeSizes (normalized ratios)
+    const totalRatio = contentRatio + inputRatio;
+    if (totalRatio > 0) {
+      const normalizedSizes =
+        promptCellPosition === 'bottom'
+          ? [contentRatio / totalRatio, inputRatio / totalRatio]
+          : [inputRatio / totalRatio, contentRatio / totalRatio];
+
+      this._splitPanel.setRelativeSizes(normalizedSizes);
+    }
   }
 
   /**
