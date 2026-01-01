@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 import { IPlugin, PluginRegistry, Token } from '@lumino/coreutils';
 
 const PLUGIN_ACTIVATION_TIMEOUT = 5000;
