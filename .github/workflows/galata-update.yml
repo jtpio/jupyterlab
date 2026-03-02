@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: jupyterlab/maintainer-tools/.github/actions/update-snapshots-checkout@main
+      - uses: jtpio/maintainer-tools/.github/actions/update-snapshots-checkout@pnpm
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Base Setup
-        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+        uses: jtpio/maintainer-tools/.github/actions/base-setup@pnpm
 
       - name: Install dependencies
         run: |
@@ -32,7 +32,7 @@ jobs:
           # Build dev-mode
           jlpm run build
 
-      - uses: jupyterlab/maintainer-tools/.github/actions/update-snapshots@v1
+      - uses: jtpio/maintainer-tools/.github/actions/update-snapshots@pnpm
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           server_url: http-get://localhost:8888/lab
@@ -65,7 +65,7 @@ jobs:
         python-version: ['3.10.6']
 
     steps:
-      - uses: jupyterlab/maintainer-tools/.github/actions/update-snapshots-checkout@main
+      - uses: jtpio/maintainer-tools/.github/actions/update-snapshots-checkout@pnpm
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -82,7 +82,7 @@ jobs:
         working-directory: demo
 
       - name: Base Setup
-        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+        uses: jtpio/maintainer-tools/.github/actions/base-setup@pnpm
 
       - name: Install dependencies
         run: |
@@ -100,7 +100,7 @@ jobs:
           # Build dev-mode
           jlpm run build
 
-      - uses: jupyterlab/maintainer-tools/.github/actions/update-snapshots@v1
+      - uses: jtpio/maintainer-tools/.github/actions/update-snapshots@pnpm
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           server_url: http-get://localhost:8888/lab

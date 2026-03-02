@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Base Setup
-        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+        uses: jtpio/maintainer-tools/.github/actions/base-setup@pnpm
 
       - name: Setup firefox
         run: brew install --cask firefox
