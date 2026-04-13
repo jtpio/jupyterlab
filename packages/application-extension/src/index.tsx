@@ -1670,7 +1670,13 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
     const { commands } = app;
     const trans = translator.load('jupyterlab');
     const areas = ['main', 'left', 'right', 'down'] as const;
+    type MovableWidgetArea = (typeof areas)[number];
     const settings = settingRegistry?.load(shell.id) ?? null;
+    const isMovableWidgetArea = (area: unknown): area is MovableWidgetArea => {
+      return (
+        typeof area === 'string' && areas.some(candidate => candidate === area)
+      );
+    };
 
     const contextMenuWidget = (): Widget | null => {
       const test = (node: HTMLElement) => !!node.dataset.id;
@@ -1694,7 +1700,7 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       return null;
     };
 
-    const getWidgetArea = (widget: Widget): ILabShell.Area | null => {
+    const getWidgetArea = (widget: Widget): MovableWidgetArea | null => {
       for (const area of areas) {
         const widgetInArea = find(
           labShell.widgets(area),
@@ -1707,7 +1713,7 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       return null;
     };
 
-    const moveWidgetToArea = (targetArea: ILabShell.Area) => {
+    const moveWidgetToArea = (targetArea: MovableWidgetArea) => {
       const widget = contextMenuWidget();
       if (!widget) {
         return;
@@ -1736,7 +1742,10 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
     // Add command for moving widgets to different areas
     commands.addCommand(CommandIDs.moveWidget, {
       label: args => {
-        const area = args?.area as ILabShell.Area;
+        const area = args?.area;
+        if (!isMovableWidgetArea(area)) {
+          return trans.__('Move Widget');
+        }
         switch (area) {
           case 'main':
             return trans.__('Move to Main Area');
@@ -1746,8 +1755,6 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
             return trans.__('Move to Right Sidebar');
           case 'down':
             return trans.__('Move to Down Area');
-          default:
-            return trans.__('Move Widget');
         }
       },
       describedBy: {
@@ -1764,17 +1771,20 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
         }
       },
       isVisible: args => {
-        const area = args?.area as string;
-        return areas.includes(area as any);
+        return isMovableWidgetArea(args?.area);
       },
       isEnabled: args => {
-        const area = args?.area as ILabShell.Area;
+        const area = args?.area;
         const widget = contextMenuWidget();
-        return widget !== null && area && getWidgetArea(widget) !== area;
+        return (
+          widget !== null &&
+          isMovableWidgetArea(area) &&
+          getWidgetArea(widget) !== area
+        );
       },
       execute: args => {
-        const area = args?.area as ILabShell.Area;
-        if (area) {
+        const area = args?.area;
+        if (isMovableWidgetArea(area)) {
           moveWidgetToArea(area);
         }
       }
