@@ -43,6 +43,7 @@ import { buildIcon, jupyterIcon, RankedMenu } from '@jupyterlab/ui-components';
 import { find, some } from '@lumino/algorithm';
 import type {
   PartialJSONValue,
+  ReadonlyPartialJSONObject,
   ReadonlyPartialJSONValue
 } from '@lumino/coreutils';
 import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
@@ -1678,26 +1679,31 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       );
     };
 
-    const contextMenuWidget = (): Widget | null => {
-      const test = (node: HTMLElement) => !!node.dataset.id;
-      const node = app.contextMenuHitTest(test);
-
-      if (!node) {
-        return null;
-      }
-
-      // Try to find the widget in all areas of interest
+    const findWidget = (id: string): Widget | null => {
       for (const area of areas) {
-        const widget = find(
-          labShell.widgets(area),
-          w => w.id === node.dataset.id
-        );
+        const widget = find(labShell.widgets(area), w => w.id === id);
         if (widget) {
           return widget;
         }
       }
-
       return null;
+    };
+
+    const contextMenuWidget = (): Widget | null => {
+      const test = (node: HTMLElement) => !!node.dataset.id;
+      const node = app.contextMenuHitTest(test);
+      if (!node) {
+        return null;
+      }
+      return findWidget(node.dataset.id!);
+    };
+
+    const resolveWidget = (args?: ReadonlyPartialJSONObject): Widget | null => {
+      const id = args?.id;
+      if (typeof id === 'string') {
+        return findWidget(id);
+      }
+      return contextMenuWidget();
     };
 
     const getWidgetArea = (widget: Widget): MovableWidgetArea | null => {
@@ -1713,23 +1719,21 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       return null;
     };
 
-    const moveWidgetToArea = (targetArea: MovableWidgetArea) => {
-      const widget = contextMenuWidget();
-      if (!widget) {
-        return;
-      }
-
+    const moveWidgetToArea = (
+      widget: Widget,
+      targetArea: MovableWidgetArea
+    ) => {
       // Don't move if already in target area
       const currentArea = getWidgetArea(widget);
       if (currentArea === targetArea) {
         return;
       }
 
-      labShell.move(widget, targetArea);
+      const newLayout = labShell.move(widget, targetArea);
       if (settings) {
         void settings
-          .then(settings => {
-            return Private.saveUserLayout(settings, labShell.userLayout);
+          .then(resolved => {
+            return Private.saveUserLayout(resolved, newLayout);
           })
           .catch(reason => {
             console.error('Failed to persist widget layout customization.');
@@ -1754,7 +1758,7 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
           case 'right':
             return trans.__('Move to Right Sidebar');
           case 'down':
-            return trans.__('Move to Down Area');
+            return trans.__('Move to Bottom Panel');
         }
       },
       describedBy: {
@@ -1765,6 +1769,12 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
               type: 'string',
               enum: ['main', 'left', 'right', 'down'],
               description: trans.__('The target area to move the widget to')
+            },
+            id: {
+              type: 'string',
+              description: trans.__(
+                'The widget ID to move. Defaults to the context menu target.'
+              )
             }
           },
           required: ['area']
@@ -1775,7 +1785,9 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       },
       isEnabled: args => {
         const area = args?.area;
-        const widget = contextMenuWidget();
+        const widget = resolveWidget(
+          args as ReadonlyPartialJSONObject | undefined
+        );
         return (
           widget !== null &&
           isMovableWidgetArea(area) &&
@@ -1784,8 +1796,11 @@ const widgetMover: JupyterFrontEndPlugin<void> = {
       },
       execute: args => {
         const area = args?.area;
-        if (isMovableWidgetArea(area)) {
-          moveWidgetToArea(area);
+        const widget = resolveWidget(
+          args as ReadonlyPartialJSONObject | undefined
+        );
+        if (widget && isMovableWidgetArea(area)) {
+          moveWidgetToArea(widget, area);
         }
       }
     });
