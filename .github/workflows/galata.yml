@@ -89,7 +89,7 @@ jobs:
         working-directory: core
 
       - name: Set up browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.4
         with:
           path: ${{ github.workspace }}/pw-browsers
           key: ${{ runner.os }}-${{ matrix.browser }}-${{ steps.pw-version.outputs.version }}
@@ -160,7 +160,7 @@ jobs:
 
       - name: Upload test assets
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: galata-test-assets-${{ matrix.browser }}-${{ matrix.project }}-${{ matrix.shard }}
           path: core/galata/test-results
@@ -168,7 +168,7 @@ jobs:
 
       - name: Upload test report blob
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: galata-blobs-${{ matrix.browser }}-${{ matrix.project }}-${{ matrix.shard }}
           path: core/galata/blob-report
@@ -202,14 +202,14 @@ jobs:
 
       - name: Download aggregate blob artifact
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: galata-blobs-merged
           path: artifacts/base
 
       - name: Download individual blob artifacts
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/overlay
           pattern: galata-blobs-*-*-*
@@ -247,7 +247,7 @@ jobs:
           npx playwright@${{ steps.pw-version.outputs.version }} merge-reports --reporter html,github ./artifacts/final/
 
       - name: Upload merged reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: visual-regression-report
           path: playwright-report
@@ -272,7 +272,7 @@ jobs:
       - name: Merge and upload test results
         if: ${{ !cancelled() }}
         continue-on-error: true
-        uses: actions/upload-artifact/merge@v6
+        uses: actions/upload-artifact/merge@v7
         with:
           # The name matches the pattern so that it is picked again on re-runs
           name: galata-test-assets-merged
@@ -281,7 +281,7 @@ jobs:
 
       - name: Merge blobs and delete individual shards
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact/merge@v6
+        uses: actions/upload-artifact/merge@v7
         with:
           # The name matches the pattern so that it is picked again on re-runs
           name: galata-blobs-merged
