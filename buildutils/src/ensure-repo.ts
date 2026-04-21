@@ -183,9 +183,6 @@ const SKIP_CSS: Dict<string[]> = {
   ],
   '@jupyterlab/help-extension': ['@jupyterlab/application'],
   '@jupyterlab/lsp': ['codemirror'],
-  // xterm CSS is already pulled in via @jupyterlab/terminal; skip the
-  // transitive duplicate auto-import here.
-  '@jupyterlab/terminal-extension': ['@xterm/xterm'],
   '@jupyterlab/metapackage': [
     '@jupyterlab/ui-components',
     '@jupyterlab/apputils',
