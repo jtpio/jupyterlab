@@ -4,6 +4,7 @@
 |----------------------------------------------------------------------------*/
 
 /* Sibling imports */
+@import './breadcrumbs.css';
 @import './collapse.css';
 @import './deprecated.css';
 @import './deprecatedExtra.css';

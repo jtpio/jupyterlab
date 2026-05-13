@@ -139,6 +139,18 @@ export class PathNavigator extends Widget {
 
   /**
    * Close the input and notify the parent via the `closed` signal.
+   *
+   * Safe to call when the navigator is already closed; no-op in that case.
+   * Used by parent widgets that need to dismiss the editor in response to
+   * external state changes (e.g. an out-of-band path change while the user
+   * is editing).
+   */
+  close(): void {
+    this._close();
+  }
+
+  /**
+   * Close the input and notify the parent via the `closed` signal.
    */
   private _close(): void {
     if (!this._isOpen || this.isDisposed) {
