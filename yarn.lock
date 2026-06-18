@@ -4980,7 +4980,7 @@ __metadata:
     "@jupyterlab/ui-components": ^4.6.0
     "@lumino/widgets": ^2.8.0
     "@types/webpack-env": ^1.18.0
-    "@xterm/addon-search": ~0.17.0-beta.197
+    "@xterm/addon-search": ~0.17.0-beta.287
     color: ^5.0.0
     rimraf: ~5.0.5
     typescript: ~5.9.3
@@ -5001,11 +5001,11 @@ __metadata:
     "@lumino/signaling": ^2.1.5
     "@lumino/widgets": ^2.8.0
     "@types/jest": ^29.2.0
-    "@xterm/addon-fit": ~0.12.0-beta.197
-    "@xterm/addon-search": ~0.17.0-beta.197
-    "@xterm/addon-web-links": ~0.13.0-beta.197
-    "@xterm/addon-webgl": ~0.20.0-beta.196
-    "@xterm/xterm": ~6.1.0-beta.197
+    "@xterm/addon-fit": ~0.12.0-beta.287
+    "@xterm/addon-search": ~0.17.0-beta.287
+    "@xterm/addon-web-links": ~0.13.0-beta.287
+    "@xterm/addon-webgl": ~0.20.0-beta.286
+    "@xterm/xterm": ~6.1.0-beta.287
     color: ^5.0.0
     jest: ^29.2.0
     jest-canvas-mock: ^2.5.2
@@ -8269,46 +8269,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xterm/addon-fit@npm:~0.12.0-beta.197":
-  version: 0.12.0-beta.197
-  resolution: "@xterm/addon-fit@npm:0.12.0-beta.197"
+"@xterm/addon-fit@npm:~0.12.0-beta.287":
+  version: 0.12.0-beta.287
+  resolution: "@xterm/addon-fit@npm:0.12.0-beta.287"
   peerDependencies:
-    "@xterm/xterm": ^6.1.0-beta.197
-  checksum: 9a7c61deefe4a317db63c4d2306cb0688bb70301c19295718e8cc10294c5b289828d68521e847451db9b2ee0fddfc78842100b623cf5a2c5afe20f82f7804fc7
+    "@xterm/xterm": ^6.1.0-beta.287
+  checksum: 73e0060b21e6a66e49a2f445293ffe34375ef77e562daa4ad633d72f6d62025feebcd2b3aecb1b630c47c204be20c8b0531a90bd90dbd05ed59a26662061e24b
   languageName: node
   linkType: hard
 
-"@xterm/addon-search@npm:~0.17.0-beta.197":
-  version: 0.17.0-beta.197
-  resolution: "@xterm/addon-search@npm:0.17.0-beta.197"
+"@xterm/addon-search@npm:~0.17.0-beta.287":
+  version: 0.17.0-beta.287
+  resolution: "@xterm/addon-search@npm:0.17.0-beta.287"
   peerDependencies:
-    "@xterm/xterm": ^6.1.0-beta.197
-  checksum: 30885e3142aedc3218f4ac90a82b24e9e32dc3d1cd317c60d6e5e266c10fc613c6d48067dc9366d2ab50faece1a0eed8e79eda25d9d3cd62b8dd44b63fa26391
+    "@xterm/xterm": ^6.1.0-beta.287
+  checksum: 4fd952533962df25316dfb4f1e75af77b009b9b64c443ab8ad06172bce0f5d367ac1ecfe80294fdba7336a3bc5eb2222f4f9aec2517f50c12850cf5c4c1e48cd
   languageName: node
   linkType: hard
 
-"@xterm/addon-web-links@npm:~0.13.0-beta.197":
-  version: 0.13.0-beta.197
-  resolution: "@xterm/addon-web-links@npm:0.13.0-beta.197"
+"@xterm/addon-web-links@npm:~0.13.0-beta.287":
+  version: 0.13.0-beta.287
+  resolution: "@xterm/addon-web-links@npm:0.13.0-beta.287"
   peerDependencies:
-    "@xterm/xterm": ^6.1.0-beta.197
-  checksum: ca8083584ab7ddd66111e5848f65861b2b357e2b75821ca2b9bd6979be74aa64c1e01118b019179a21bc07157fdb55a12ecd3ea717d526ff22ed010833fb67e8
+    "@xterm/xterm": ^6.1.0-beta.287
+  checksum: 40f43fc02ea9f772021f5ae85e27cbe553d4a709386a2784253fcc3a4d814f8d410c7f5ac9cc0f63df739ab35ad7733dbaf2e455a94a8fb956407478175e77b2
   languageName: node
   linkType: hard
 
-"@xterm/addon-webgl@npm:~0.20.0-beta.196":
-  version: 0.20.0-beta.196
-  resolution: "@xterm/addon-webgl@npm:0.20.0-beta.196"
+"@xterm/addon-webgl@npm:~0.20.0-beta.286":
+  version: 0.20.0-beta.286
+  resolution: "@xterm/addon-webgl@npm:0.20.0-beta.286"
   peerDependencies:
-    "@xterm/xterm": ^6.1.0-beta.197
-  checksum: 8996fb37795ed8ec449321765c86602b3be6e81f8d583a7c9c24eabe3eb85e17133312891198ba7a901cd8713716af57000bb9ddeb37d66957d8dae9834b109d
+    "@xterm/xterm": ^6.1.0-beta.287
+  checksum: 1175d1bd0bf1b67c974e3bf6cbbe65d8efbb8f5b3c52b5366639aab8695828a3def915590e93af7d9a5702f9f7677bc45b6f73a0cb2b4bd849ac406128009e88
   languageName: node
   linkType: hard
 
-"@xterm/xterm@npm:~6.1.0-beta.197":
-  version: 6.1.0-beta.197
-  resolution: "@xterm/xterm@npm:6.1.0-beta.197"
-  checksum: 80c7494e0b954919d1ac7bdaeae96ab418ccea0d89c87ae8dcafaccc000df31943dac47c5f37cc846f19c1e87e620c4aef3f717169ea55a0ca43a043825c1702
+"@xterm/xterm@npm:~6.1.0-beta.287":
+  version: 6.1.0-beta.287
+  resolution: "@xterm/xterm@npm:6.1.0-beta.287"
+  checksum: 465729eaaad3bc7ef4f2e6ffc6c5b14faeb60f352d1d497a980a347d53979f014e8d13d49623cd9bc27e723f5846f1673385f00cb1561fea0efcd1e6204c5a07
   languageName: node
   linkType: hard
 
