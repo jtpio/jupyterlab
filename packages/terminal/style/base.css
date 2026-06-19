@@ -30,3 +30,24 @@
 [data-term-theme='dark'] .xterm .xterm-screen canvas {
   border: var(--jp-border-width) solid #000;
 }
+
+/*
+ * With xterm.js 6.x the canvas renderer was removed; when WebGL is not
+ * available the built-in DOM renderer is used, which has no `<canvas>` to
+ * carry the border rules above. xterm defaults `.xterm-viewport` to a black
+ * background, which then shows through as a frame around the terminal. Match
+ * the viewport to the terminal theme so the DOM renderer blends in the same
+ * way the canvas renderer did. The `:not(.allow-transparency)` mirrors
+ * xterm's own rule and keeps this override more specific than it.
+ */
+[data-term-theme='inherit'] .xterm:not(.allow-transparency) .xterm-viewport {
+  background-color: var(--jp-layout-color0);
+}
+
+[data-term-theme='light'] .xterm:not(.allow-transparency) .xterm-viewport {
+  background-color: white;
+}
+
+[data-term-theme='dark'] .xterm:not(.allow-transparency) .xterm-viewport {
+  background-color: black;
+}
