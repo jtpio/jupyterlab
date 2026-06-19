@@ -155,8 +155,10 @@ test.describe('Terminal', () => {
         });
       }, searchText);
 
-      // Wait for search to be performed and terminal canvas rerendered.
-      await page.waitForSelector('.xterm-find-active-result-decoration');
+      // Wait for the search match decorations to be rendered. xterm.js 6.x no
+      // longer applies the `xterm-find-active-result-decoration` class; the
+      // active match is distinguished via its background color instead.
+      await page.waitForSelector('.xterm-find-result-decoration');
 
       expect(await terminal.screenshot()).toMatchSnapshot('search.png');
     });
