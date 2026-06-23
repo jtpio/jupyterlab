@@ -19,5 +19,8 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
     this.global.Response = Response;
     // While jsdom has it's own File, it clashes with instance checks in fetch, so we use one from Node.js
     this.global.File = File;
+    // jsdom 20 (bundled with jest 29) does not provide structuredClone, which
+    // xterm.js 6.x relies on. Use the implementation from Node.js.
+    this.global.structuredClone = structuredClone;
   }
 }
