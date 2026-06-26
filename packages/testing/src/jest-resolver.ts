@@ -2,46 +2,25 @@
  * Copyright (c) Jupyter Development Team.
  * Distributed under the terms of the Modified BSD License.
  */
-// ws workaround suggested in https://github.com/websockets/ws/issues/2171#issuecomment-1792147402
-// Mentioned solution license is:
-//    Copyright (c) Microsoft Corporation. All rights reserved.
-//    Licensed under the MIT License.
-
-type IResolverPackage = {
-  name?: string;
-  exports?: Record<string, unknown>;
-  [key: string]: unknown;
-};
+// Custom Jest resolver that forces `ws` to resolve to its CommonJS (Node)
+// build. Originally a workaround for https://github.com/websockets/ws/pull/2118.
+//
+// The jsdom test environment resolves packages using the `browser` export
+// condition, which would select ws's browser stub. Under Jest 30 the export
+// conditions resolution otherwise selects ws's ESM build (`wrapper.mjs`), whose
+// default export is the `WebSocket` class *without* the static `WebSocket.Server`
+// used by the `@jupyterlab/services` test helpers. Resolving `ws` to its
+// CommonJS entry point (`index.js`) exposes `WebSocket.Server`/`WebSocketServer`.
 
 type IResolverOptions = {
-  defaultResolver: (
-    path: string,
-    options: IResolverOptions & {
-      packageFilter?: (pkg: IResolverPackage) => IResolverPackage;
-    }
-  ) => string;
+  defaultResolver: (request: string, options: IResolverOptions) => string;
   [key: string]: unknown;
 };
 
-module.exports = (path: string, options: IResolverOptions) => {
+module.exports = (request: string, options: IResolverOptions): string => {
+  if (request === 'ws') {
+    return require.resolve('ws');
+  }
   // Call the defaultResolver, so we leverage its cache, error handling, etc.
-  return options.defaultResolver(path, {
-    ...options,
-    // Use packageFilter to process parsed `package.json` before the resolution (see https://www.npmjs.com/package/resolve#resolveid-opts-cb)
-    packageFilter: (pkg: IResolverPackage) => {
-      // This is a workaround for https://github.com/websockets/ws/pull/2118
-      if (pkg.name === 'ws') {
-        const exportsField = pkg.exports;
-        if (exportsField && typeof exportsField === 'object') {
-          const exportRoot = (exportsField as Record<string, unknown>)['.'];
-          if (exportRoot && typeof exportRoot === 'object') {
-            if ('browser' in exportRoot) {
-              delete (exportRoot as Record<string, unknown>).browser;
-            }
-          }
-        }
-      }
-      return pkg;
-    }
-  });
+  return options.defaultResolver(request, options);
 };
