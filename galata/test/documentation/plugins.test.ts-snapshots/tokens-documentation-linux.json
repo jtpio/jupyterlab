@@ -10,6 +10,7 @@
   "@jupyterlab/application:IRouter": "The URL router used by the application. Use this to add custom URL-routing for your extension (e.g., to invoke a command if the user navigates to a sub-path).",
   "@jupyterlab/application:ITreePathUpdater": "A service to update the tree path.",
   "@jupyterlab/application:ITreeResolver": "A service to resolve the tree path.",
+  "@jupyterlab/apputils:IBrowsingContext": "A service providing the id of the browsing context (the browser tab, window\n  or frame) running the application. Require this to identify this client\n  among the clients connected to the same server.",
   "@jupyterlab/apputils:ICommandPalette": "A service for the application command palette\n  in the left panel. Use this to add commands to the palette.",
   "@jupyterlab/apputils:IKernelStatusModel": "A service to register kernel session provider to the kernel status indicator.",
   "@jupyterlab/apputils:ILicensesClient": "A service for fetching licenses.",

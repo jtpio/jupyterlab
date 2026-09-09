@@ -16,6 +16,7 @@ import {
 } from '@jupyterlab/application';
 import {
   Dialog,
+  IBrowsingContext,
   ICommandPalette,
   IMovableSectionRegistry,
   ISanitizer,
@@ -35,7 +36,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { IStateDB, StateDB } from '@jupyterlab/statedb';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { jupyterFaviconIcon } from '@jupyterlab/ui-components';
-import { PromiseDelegate } from '@lumino/coreutils';
+import { PromiseDelegate, UUID } from '@lumino/coreutils';
 import { DisposableDelegate } from '@lumino/disposable';
 import { Debouncer, Throttler } from '@lumino/polling';
 import type { Widget } from '@lumino/widgets';
@@ -124,6 +125,18 @@ const paletteRestorer: JupyterFrontEndPlugin<void> = {
   activate: (app: JupyterFrontEnd, restorer: ILayoutRestorer) => {
     Palette.restore(app, restorer);
   }
+};
+
+/**
+ * The default browsing context provider.
+ */
+const browsingContext: JupyterFrontEndPlugin<IBrowsingContext> = {
+  id: '@jupyterlab/apputils-extension:browsing-context',
+  description:
+    'Provides the id of the browsing context running the application.',
+  autoStart: true,
+  provides: IBrowsingContext,
+  activate: (): IBrowsingContext => ({ id: UUID.uuid4() })
 };
 
 /**
@@ -929,6 +942,7 @@ const movableSectionRegistry: JupyterFrontEndPlugin<IMovableSectionRegistry> = {
 const plugins: JupyterFrontEndPlugin<any>[] = [
   kernelSettings,
   announcements,
+  browsingContext,
   kernelStatus,
   licensesClient,
   licensesPlugin,

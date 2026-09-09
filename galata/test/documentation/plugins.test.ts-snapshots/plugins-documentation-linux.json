@@ -18,6 +18,7 @@
   "@jupyterlab/application-extension:top-bar": "Adds a toolbar to the top area (next to the main menu bar).",
   "@jupyterlab/application-extension:tree-resolver": "Provides the tree route resolver",
   "@jupyterlab/apputils-extension:announcements": "Add the announcement feature. It will fetch news on the internet and check for application updates.",
+  "@jupyterlab/apputils-extension:browsing-context": "Provides the id of the browsing context running the application.",
   "@jupyterlab/apputils-extension:kernel-status": "Provides the kernel status indicator model.",
   "@jupyterlab/apputils-extension:kernels-settings": "Reserves the name for kernel settings.",
   "@jupyterlab/apputils-extension:licenses-client": "The licenses client plugin for fetching licenses.",

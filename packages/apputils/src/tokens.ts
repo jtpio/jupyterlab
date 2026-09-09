@@ -314,6 +314,30 @@ export interface IWindowResolver {
 }
 
 /**
+ * The browsing context token.
+ */
+export const IBrowsingContext = new Token<IBrowsingContext>(
+  '@jupyterlab/apputils:IBrowsingContext',
+  `A service providing the id of the browsing context (the browser tab, window
+  or frame) running the application. Require this to identify this client
+  among the clients connected to the same server.`
+);
+
+/**
+ * The description of the browsing context running the application.
+ */
+export interface IBrowsingContext {
+  /**
+   * The unique id of the browsing context.
+   *
+   * #### Notes
+   * The id is generated on each page load. It is not persisted and it is
+   * not shared with other tabs, windows or frames.
+   */
+  readonly id: string;
+}
+
+/**
  * The namespace for `IToolbarWidgetRegistry` related interfaces
  */
 export namespace ToolbarRegistry {
