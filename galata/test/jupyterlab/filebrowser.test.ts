@@ -1,8 +1,15 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import type { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { expect, test } from '@jupyterlab/galata';
 import { changeCodeFontSize, getFileListFontSize } from './utils';
+
+declare module '@jupyterlab/galata' {
+  interface IPluginNameToInterfaceMap {
+    '@jupyterlab/filebrowser-extension:factory': IFileBrowserFactory;
+  }
+}
 
 test('Drag file from nested directory to parent via breadcrumb', async ({
   page,
@@ -45,6 +52,42 @@ test('Drag file from nested directory to parent via breadcrumb', async ({
   // Verify the file is now in dir1
   await fileItem.waitFor({ state: 'visible' });
   expect(await page.filebrowser.isFileListedInBrowser(fileName)).toBeTruthy();
+});
+
+test('Current file browser follows the one shown in the side bar', async ({
+  page
+}) => {
+  const currentBrowser = () =>
+    page.evaluate(async () => {
+      const factory = await window.galata.getPlugin(
+        '@jupyterlab/filebrowser-extension:factory'
+      );
+      return factory?.tracker.currentWidget?.id ?? null;
+    });
+
+  await page.evaluate(async () => {
+    // Keep the focus out of the file browsers so that only visibility counts.
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    const factory = await window.galata.getPlugin(
+      '@jupyterlab/filebrowser-extension:factory'
+    );
+    const browser = factory!.createFileBrowser('second-filebrowser');
+    browser.title.caption = 'Second file browser';
+    // Like a drive browser in a wrapper, do not focus the content on activation.
+    browser.activate = () => undefined;
+    window.jupyterapp.shell.add(browser, 'left', { rank: 101 });
+  });
+
+  // The new browser is hidden behind the default one and must not take over.
+  expect(await currentBrowser()).toEqual('filebrowser');
+
+  await page.sidebar.openTab('second-filebrowser');
+  expect(await currentBrowser()).toEqual('second-filebrowser');
+
+  await page.sidebar.openTab('filebrowser');
+  expect(await currentBrowser()).toEqual('filebrowser');
 });
 
 test('File rename input respects UI font size', async ({ page }) => {

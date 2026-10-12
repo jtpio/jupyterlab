@@ -132,6 +132,16 @@ export class WidgetTracker<T extends Widget = Widget>
       }
     }, this);
 
+    // The focus tracker only signals a current change for a different widget,
+    // so focus returning to its current widget must be caught here. A stale
+    // value is possible when a listener above moved the focus again.
+    focus.activeChanged.connect((_, active) => {
+      const widget = active.newValue;
+      if (widget && widget === focus.activeWidget && widget !== pool.current) {
+        pool.current = widget;
+      }
+    }, this);
+
     pool.added.connect((_, widget) => {
       this._widgetAdded.emit(widget);
     }, this);
@@ -357,6 +367,18 @@ export class WidgetTracker<T extends Widget = Widget>
    */
   async save(widget: T): Promise<void> {
     return this._pool.save(widget);
+  }
+
+  /**
+   * Set the current widget.
+   *
+   * @param widget - The widget to make current.
+   *
+   * #### Notes
+   * This is a no-op if the widget is not tracked.
+   */
+  protected setCurrentWidget(widget: T): void {
+    this._pool.current = widget;
   }
 
   /**

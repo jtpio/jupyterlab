@@ -70,6 +70,11 @@ export interface IFileBrowserFactory {
 
   /**
    * The widget tracker used by the factory to track file browsers.
+   *
+   * #### Notes
+   * The current widget is the most recently focused file browser. A browser
+   * shown while the current one is hidden becomes current, and a browser
+   * added while hidden does not.
    */
   readonly tracker: WidgetTracker<FileBrowser>;
 }

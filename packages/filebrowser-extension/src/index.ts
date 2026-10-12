@@ -24,8 +24,7 @@ import {
   IToolbarWidgetRegistry,
   Notification,
   setToolbar,
-  showErrorMessage,
-  WidgetTracker
+  showErrorMessage
 } from '@jupyterlab/apputils';
 import { PageConfig, PathExt } from '@jupyterlab/coreutils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
@@ -33,6 +32,7 @@ import type { DocumentRegistry } from '@jupyterlab/docregistry';
 import { getAvailableKernelFileTypes } from '@jupyterlab/docregistry';
 import {
   FileBrowser,
+  FileBrowserTracker,
   FileUploadStatus,
   FilterFileBrowserModel,
   formatFileSize,
@@ -331,7 +331,7 @@ const factory: JupyterFrontEndPlugin<IFileBrowserFactory> = {
     stateDB: IStateDB | null,
     info: JupyterLab.IInfo | null
   ): Promise<IFileBrowserFactory> => {
-    const tracker = new WidgetTracker<FileBrowser>({ namespace });
+    const tracker = new FileBrowserTracker({ namespace });
     const createFileBrowser = (
       id: string,
       options: IFileBrowserFactory.IOptions = {}

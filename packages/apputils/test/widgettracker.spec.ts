@@ -11,6 +11,10 @@ const namespace = 'widget-tracker-test';
 class TestTracker<T extends Widget> extends WidgetTracker<T> {
   methods: string[] = [];
 
+  setCurrent(widget: T): void {
+    this.setCurrentWidget(widget);
+  }
+
   protected onCurrentChanged(widget: T): void {
     super.onCurrentChanged(widget);
     this.methods.push('onCurrentChanged');
@@ -176,6 +180,43 @@ describe('@jupyterlab/apputils', () => {
         widget1.dispose();
       });
 
+      it('should be updated when the last focused widget gets focus again', async () => {
+        const one = createWidget();
+        const two = createWidget();
+
+        Widget.attach(one, document.body);
+        Widget.attach(two, document.body);
+        await tracker.add(one);
+        focus(one);
+        one.node.blur();
+        await tracker.add(two);
+        expect(tracker.currentWidget).toBe(two);
+        focus(one);
+        expect(tracker.currentWidget).toBe(one);
+        one.dispose();
+        two.dispose();
+      });
+
+      it('should follow the focus moved again by a current changed listener', async () => {
+        const one = createWidget();
+        const two = createWidget();
+
+        Widget.attach(one, document.body);
+        Widget.attach(two, document.body);
+        await tracker.add(one);
+        await tracker.add(two);
+        focus(one);
+        tracker.currentChanged.connect((_, widget) => {
+          if (widget === two) {
+            focus(one);
+          }
+        });
+        focus(two);
+        expect(tracker.currentWidget).toBe(one);
+        one.dispose();
+        two.dispose();
+      });
+
       it('should revert to last added widget on widget disposal', async () => {
         const one = createWidget();
         const two = createWidget();
@@ -238,6 +279,39 @@ describe('@jupyterlab/apputils', () => {
         widgets.forEach(widget => {
           widget.dispose();
         });
+      });
+    });
+
+    describe('#setCurrentWidget()', () => {
+      it('should set a tracked widget as the current widget', async () => {
+        const tracker = new TestTracker({ namespace });
+        const one = createWidget();
+        const two = createWidget();
+
+        await tracker.add(one);
+        await tracker.add(two);
+        expect(tracker.currentWidget).toBe(two);
+        const promise = signalToPromise(tracker.currentChanged);
+        tracker.setCurrent(one);
+        expect(tracker.currentWidget).toBe(one);
+        const [, widget] = await promise;
+        expect(widget).toBe(one);
+        one.dispose();
+        two.dispose();
+        tracker.dispose();
+      });
+
+      it('should ignore a widget that is not tracked', async () => {
+        const tracker = new TestTracker({ namespace });
+        const one = createWidget();
+        const other = createWidget();
+
+        await tracker.add(one);
+        tracker.setCurrent(other);
+        expect(tracker.currentWidget).toBe(one);
+        one.dispose();
+        other.dispose();
+        tracker.dispose();
       });
     });
 

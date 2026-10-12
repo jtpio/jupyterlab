@@ -11,5 +11,6 @@ export * from './listing';
 export * from './model';
 export * from './opendialog';
 export * from './tokens';
+export * from './tracker';
 export * from './upload';
 export * from './uploadstatus';
