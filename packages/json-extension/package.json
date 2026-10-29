@@ -44,7 +44,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-highlight-words": "^0.20.0",
-    "react-json-tree": "^0.18.0",
+    "react-json-tree": "^0.20.0",
     "style-mod": "^4.0.0"
   },
   "devDependencies": {
